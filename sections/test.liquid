@@ -3,6 +3,20 @@
 
 <div class="product-card">
   <div class="product-image">
+    <span class="sale-badge">
+      {% unless current_variant.compare_at_price > current_variant.price %}
+        style="display:none;"
+      {% endunless %}
+      {% if current_variant.compare_at_price > current_variant.price %}
+        {% assign zbritje = current_variant.compare_at_price
+          | minus: current_variant.price
+          | times: 100
+          | divided_by: current_variant.compare_at_price
+        %}
+
+        -{{ zbritje }} %
+      {% endif %}
+    </span>
     {% if product.featured_image != blank %}
       <a href="{{ product.url }}">
         {{
@@ -13,7 +27,9 @@
       </a>
     {% endif %}
   </div>
-  <h3><a href="{{ product.url }}"></a>{{ product.title }}</h3>
+  <h3>
+    <a href="{{ product.url }}">{{ product.title }}</a>
+  </h3>
   <p>Price : {{ product.price | money }}</p>
   <button type="button">Add to Cart</button>
 </div>
