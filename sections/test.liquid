@@ -1,11 +1,12 @@
 {% assign product = section.settings.product %}
 
 <div class="product-card">
-  {{ product.featured_image | image_url: width: 600 | image_tag }}
-
+  {% if product.featured_image != blank %}
+    {{ product.featured_image | image_url: width: 600 | image_tag }}
+  {% endif %}
   <h1>{{ product.title }}</h1>
-  <p>{{ product.price }}</p>
-  <button>Add to Cart</button>
+  <p>{{ product.price | money }}</p>
+  <button type="button">Add to Cart</button>
 </div>
 
 {% schema %}
