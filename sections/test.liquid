@@ -30,8 +30,40 @@
   <h3>
     <a href="{{ product.url }}">{{ product.title }}</a>
   </h3>
-  <p>Price : {{ product.price | money }}</p>
-  <button type="button">Add to Cart</button>
+  <span class="product-price">
+    {{ current_variant.price | money }}
+  </span>
+  <span class="compare-price">
+    {% unless current_variant.compare_at_price > current_variant.price %}
+      style="display:none;"
+    {% endunless -%}
+    >{{ current_variant.compare_at_price | money -}}
+  </span>
+
+  <div class="variant-list">
+    {% for variant in product.variants %}
+      <button
+        type="button"
+        class="variant-button {% if variant.id == current_variant.id %}active{% endif %}"
+        data-variant-id="{{ variant.id }}"
+        data-variant-title="{{ variant.title | escape }}"
+
+        data-price="{{ variant.price }}"
+        data-compare-price="{{ variant.compare_at_price | money }}"
+
+        data-variant-price="{{ variant.price | money }}"
+        data-variant-compare-price="{{ variant.compare_at_price | money }}"
+        {% if variant.featured_image != blank %}
+          data-variant-image="{{ variant.featured_image | image_url: width: 600  }}"
+        {% endif %}
+        {%- unless variant.available -%}
+          disabled
+        {%- endunless -%}
+      >
+        {{ variant.title }}
+      </button>
+    {% endfor %}
+  </div>
 </div>
 
 <style>
