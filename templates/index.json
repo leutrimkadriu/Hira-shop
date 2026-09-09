@@ -315,14 +315,16 @@
       "type": "test",
       "name": "Test1",
       "settings": {
-        "product": "originas-men"
+        "product": "originas-men",
+        "heading_color": ""
       }
     },
     "test_kDxMe9": {
       "type": "test",
       "name": "Test1",
       "settings": {
-        "product": "originals-men"
+        "product": "originals-men",
+        "heading_color": "#D35959"
       }
     }
   },
