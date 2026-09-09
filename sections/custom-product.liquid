@@ -1514,94 +1514,6 @@
     }
 
     /* ============================================================
-     CART COUNT FALLBACK
-  ============================================================ */
-
-    function updateCartCount(cart) {
-      if (!cart) return;
-
-      const selectors = [
-        '[data-cart-count]',
-        '.cart-count',
-        '#CartCount',
-        '.cart-count-bubble span',
-        '[data-cart-count-bubble]',
-      ];
-
-      document.querySelectorAll(selectors.join(',')).forEach(function (element) {
-        element.textContent = cart.item_count;
-      });
-    }
-
-    /* ============================================================
-     RENDER CART DRAWER
-  ============================================================ */
-
-    function renderCartDrawer(data) {
-      const cartDrawer = document.querySelector('cart-drawer');
-
-      /*
-      Mënyra e parë:
-      theme custom element me renderContents()
-    */
-
-      if (cartDrawer && typeof cartDrawer.renderContents === 'function') {
-        cartDrawer.renderContents(data);
-
-        return true;
-      }
-
-      /*
-      Fallback:
-      zëvendëso përmbajtjen nga section HTML.
-    */
-
-      if (data.sections && data.sections['cart-drawer']) {
-        const parser = new DOMParser();
-
-        const parsedDocument = parser.parseFromString(data.sections['cart-drawer'], 'text/html');
-
-        const newDrawer = parsedDocument.querySelector('cart-drawer');
-
-        const currentDrawer = document.querySelector('cart-drawer');
-
-        if (newDrawer && currentDrawer) {
-          currentDrawer.innerHTML = newDrawer.innerHTML;
-
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    /* ============================================================
-     OPEN DRAWER
-  ============================================================ */
-
-    function openCartDrawer() {
-      const cartDrawer = document.querySelector('cart-drawer, .cart-drawer, [data-cart-drawer]');
-
-      if (!cartDrawer) {
-        return;
-      }
-
-      if (typeof cartDrawer.open === 'function') {
-        cartDrawer.open();
-
-        return;
-      }
-
-      cartDrawer.classList.add('active');
-
-      cartDrawer.classList.add('is-open');
-
-      cartDrawer.removeAttribute('hidden');
-
-      cartDrawer.setAttribute('aria-hidden', 'false');
-    }
-
-    /* ============================================================
      ADD TO CART AJAX
   ============================================================ */
 
@@ -1638,35 +1550,31 @@
              ADD PRODUCT + RETURN CART SECTIONS
           ====================================== */
 
-          const payload = {
-            items: [
-              {
-                id: variantId,
+          const cartDrawer = document.querySelector('cart-drawer');
+          const config = fetchConfig('javascript');
+          const formData = new FormData(form);
 
-                quantity: quantity,
-              },
-            ],
+          config.headers['X-Requested-With'] = 'XMLHttpRequest';
+          delete config.headers['Content-Type'];
 
-            sections: ['cart-drawer', 'cart-icon-bubble'],
+          if (cartDrawer && typeof cartDrawer.getSectionsToRender === 'function') {
+            formData.append(
+              'sections',
+              cartDrawer.getSectionsToRender().map(function (cartSection) {
+                return cartSection.id;
+              })
+            );
+            formData.append('sections_url', window.location.pathname);
+            cartDrawer.setActiveElement(document.activeElement);
+          }
 
-            sections_url: window.location.pathname,
-          };
+          config.body = formData;
 
-          const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
-            method: 'POST',
-
-            headers: {
-              'Content-Type': 'application/json',
-
-              Accept: 'application/json',
-            },
-
-            body: JSON.stringify(payload),
-          });
+          const response = await fetch(routes.cart_add_url, config);
 
           const data = await response.json();
 
-          if (!response.ok) {
+          if (!response.ok || data.status) {
             throw new Error(data.description || data.message || 'Could not add product');
           }
 
@@ -1690,39 +1598,11 @@
             RENDER DRAWER
           */
 
-          renderCartDrawer(data);
-
-          /*
-            CART COUNT FALLBACK
-          */
-
-          const cartResponse = await fetch(window.Shopify.routes.root + 'cart.js', {
-            headers: {
-              Accept: 'application/json',
-            },
-          });
-
-          if (cartResponse.ok) {
-            const cart = await cartResponse.json();
-
-            updateCartCount(cart);
-
-            document.dispatchEvent(
-              new CustomEvent('cart:updated', {
-                detail: {
-                  cart: cart,
-                },
-              })
-            );
+          if (!cartDrawer || typeof cartDrawer.renderContents !== 'function' || !data.sections) {
+            throw new Error('Could not refresh cart drawer');
           }
 
-          /*
-            OPEN DRAWER
-          */
-
-          requestAnimationFrame(function () {
-            openCartDrawer();
-          });
+          cartDrawer.renderContents(data);
 
           /*
             BUTTON BACK TO NORMAL
