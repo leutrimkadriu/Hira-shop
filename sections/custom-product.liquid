@@ -1065,7 +1065,6 @@
 
       }
 </style>
-
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const section = document.getElementById('CustomProduct-{{ section.id }}');
@@ -1073,8 +1072,8 @@
     if (!section) return;
 
     /* ============================================================
-       VARIANTS
-    ============================================================ */
+     VARIANTS
+  ============================================================ */
 
     const variantJson = section.querySelector('[data-product-variants]');
 
@@ -1083,15 +1082,25 @@
     const variants = JSON.parse(variantJson.textContent);
 
     const variantInput = section.querySelector('[data-variant-input]');
+
     const price = section.querySelector('[data-product-price]');
+
     const comparePrice = section.querySelector('[data-compare-price]');
+
     const discount = section.querySelector('[data-discount]');
+
     const stock = section.querySelector('[data-stock-text]');
+
     const addButton = section.querySelector('[data-add-to-cart]');
+
     const addText = section.querySelector('[data-add-text]');
+
     const addStock = section.querySelector('[data-add-stock]');
+
     const selectedColorText = section.querySelector('[data-selected-color]');
+
     const selectedSizeText = section.querySelector('[data-selected-size]');
+
     const message = section.querySelector('[data-product-message]');
 
     const currency =
@@ -1111,8 +1120,8 @@
     }
 
     /* ============================================================
-       CURRENT OPTIONS
-    ============================================================ */
+     CURRENT OPTIONS
+  ============================================================ */
 
     const selectedOptions = {};
 
@@ -1121,8 +1130,8 @@
     });
 
     /* ============================================================
-       FIND VARIANT
-    ============================================================ */
+     FIND VARIANT
+  ============================================================ */
 
     function findVariant() {
       return variants.find(function (variant) {
@@ -1143,8 +1152,8 @@
     }
 
     /* ============================================================
-       UPDATE VARIANT
-    ============================================================ */
+     UPDATE VARIANT
+  ============================================================ */
 
     function updateVariant() {
       const variant = findVariant();
@@ -1178,14 +1187,17 @@
       }
 
       const normalPrice = Number(variant.price || 0);
+
       const compare = Number(variant.compare_at_price || 0);
 
       if (comparePrice) {
         if (compare > normalPrice) {
           comparePrice.textContent = formatMoney(compare);
+
           comparePrice.classList.remove('is-hidden');
         } else {
           comparePrice.textContent = '';
+
           comparePrice.classList.add('is-hidden');
         }
       }
@@ -1195,9 +1207,11 @@
           const percentage = Math.round(((compare - normalPrice) / compare) * 100);
 
           discount.textContent = '-' + percentage + '%';
+
           discount.classList.remove('is-hidden');
         } else {
           discount.textContent = '';
+
           discount.classList.add('is-hidden');
         }
       }
@@ -1238,21 +1252,25 @@
     }
 
     /* ============================================================
-       GALLERY
-    ============================================================ */
+     GALLERY
+  ============================================================ */
 
     const mediaItems = Array.from(section.querySelectorAll('[data-media-item]'));
 
     const thumbnails = Array.from(section.querySelectorAll('[data-thumbnail]'));
 
     const previous = section.querySelector('[data-prev-media]');
+
     const next = section.querySelector('[data-next-media]');
 
     let visibleMedia = [];
+
     let currentMediaIndex = 0;
 
     function showMedia(index) {
-      if (!visibleMedia.length) return;
+      if (!visibleMedia.length) {
+        return;
+      }
 
       if (index < 0) {
         index = visibleMedia.length - 1;
@@ -1274,7 +1292,9 @@
 
       const activeItem = visibleMedia[index];
 
-      if (!activeItem) return;
+      if (!activeItem) {
+        return;
+      }
 
       activeItem.item.classList.add('is-active');
 
@@ -1324,9 +1344,9 @@
       });
 
       /*
-        Nëse ALT nuk përputhet,
-        NUK i shfaqim krejt fotot e ngjyrave tjera.
-      */
+      Nëse ALT nuk përputhet,
+      mos shfaq fotot tjera.
+    */
 
       if (!visibleMedia.length) {
         console.warn('No gallery images found for color:', color);
@@ -1362,8 +1382,8 @@
     }
 
     /* ============================================================
-       OPTION BUTTONS
-    ============================================================ */
+     OPTION BUTTONS
+  ============================================================ */
 
     const optionButtons = section.querySelectorAll('[data-option-button]');
 
@@ -1382,8 +1402,8 @@
         this.classList.add('is-active');
 
         /*
-              COLOR
-            */
+            COLOR
+          */
 
         if (this.hasAttribute('data-color')) {
           if (selectedColorText) {
@@ -1394,8 +1414,8 @@
         }
 
         /*
-              SIZE
-            */
+            SIZE
+          */
 
         if (this.hasAttribute('data-size-button')) {
           if (selectedSizeText) {
@@ -1405,17 +1425,19 @@
 
         if (message) {
           message.textContent = '';
+
           message.className = 'custom-product__message';
         }
 
         updateVariant();
+
         updateSizeAvailability();
       });
     });
 
     /* ============================================================
-       SIZE AVAILABILITY
-    ============================================================ */
+     SIZE AVAILABILITY
+  ============================================================ */
 
     function updateSizeAvailability() {
       const sizeButtons = section.querySelectorAll('[data-size-button]');
@@ -1425,6 +1447,7 @@
 
         const temporaryOptions = {
           ...selectedOptions,
+
           [position]: button.dataset.optionValue,
         };
 
@@ -1449,8 +1472,8 @@
     }
 
     /* ============================================================
-       QUANTITY
-    ============================================================ */
+     QUANTITY
+  ============================================================ */
 
     const quantityInput = section.querySelector('[data-quantity-input]');
 
@@ -1491,65 +1514,83 @@
     }
 
     /* ============================================================
-       UPDATE HEADER CART COUNT
-    ============================================================ */
+     CART COUNT FALLBACK
+  ============================================================ */
 
     function updateCartCount(cart) {
       if (!cart) return;
 
-      const cartCountElements = document.querySelectorAll(
-        [
-          '[data-cart-count]',
-          '.cart-count',
-          '#CartCount',
-          '.cart-count-bubble span',
-          '.cart-count-bubble',
-          '[data-cart-count-bubble]',
-        ].join(',')
-      );
+      const selectors = [
+        '[data-cart-count]',
+        '.cart-count',
+        '#CartCount',
+        '.cart-count-bubble span',
+        '[data-cart-count-bubble]',
+      ];
 
-      cartCountElements.forEach(function (element) {
-        /*
-            Nëse .cart-count-bubble ka një span brenda,
-            ndryshojmë vetëm span-in.
-          */
-
-        const innerSpan = element.querySelector && element.querySelector('span');
-
-        if (innerSpan && element.classList.contains('cart-count-bubble')) {
-          innerSpan.textContent = cart.item_count;
-
-          return;
-        }
-
+      document.querySelectorAll(selectors.join(',')).forEach(function (element) {
         element.textContent = cart.item_count;
       });
     }
 
     /* ============================================================
-       OPEN CART DRAWER
-    ============================================================ */
+     RENDER CART DRAWER
+  ============================================================ */
+
+    function renderCartDrawer(data) {
+      const cartDrawer = document.querySelector('cart-drawer');
+
+      /*
+      Mënyra e parë:
+      theme custom element me renderContents()
+    */
+
+      if (cartDrawer && typeof cartDrawer.renderContents === 'function') {
+        cartDrawer.renderContents(data);
+
+        return true;
+      }
+
+      /*
+      Fallback:
+      zëvendëso përmbajtjen nga section HTML.
+    */
+
+      if (data.sections && data.sections['cart-drawer']) {
+        const parser = new DOMParser();
+
+        const parsedDocument = parser.parseFromString(data.sections['cart-drawer'], 'text/html');
+
+        const newDrawer = parsedDocument.querySelector('cart-drawer');
+
+        const currentDrawer = document.querySelector('cart-drawer');
+
+        if (newDrawer && currentDrawer) {
+          currentDrawer.innerHTML = newDrawer.innerHTML;
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    /* ============================================================
+     OPEN DRAWER
+  ============================================================ */
 
     function openCartDrawer() {
-      const cartDrawer = document.querySelector(['cart-drawer', '.cart-drawer', '[data-cart-drawer]'].join(','));
+      const cartDrawer = document.querySelector('cart-drawer, .cart-drawer, [data-cart-drawer]');
 
       if (!cartDrawer) {
         return;
       }
-
-      /*
-        Shopify custom element
-      */
 
       if (typeof cartDrawer.open === 'function') {
         cartDrawer.open();
 
         return;
       }
-
-      /*
-        Fallback për themes të tjera
-      */
 
       cartDrawer.classList.add('active');
 
@@ -1561,30 +1602,8 @@
     }
 
     /* ============================================================
-       CART EVENTS
-    ============================================================ */
-
-    function dispatchCartEvents(cart) {
-      document.dispatchEvent(
-        new CustomEvent('cart:updated', {
-          detail: {
-            cart: cart,
-          },
-        })
-      );
-
-      document.dispatchEvent(
-        new CustomEvent('cart:refresh', {
-          detail: {
-            cart: cart,
-          },
-        })
-      );
-    }
-
-    /* ============================================================
-       ADD TO CART AJAX
-    ============================================================ */
+     ADD TO CART AJAX
+  ============================================================ */
 
     const form = section.querySelector('.custom-product__form');
 
@@ -1604,28 +1623,34 @@
           return;
         }
 
-        /*
-            CLEAR OLD MESSAGE
-          */
-
         if (message) {
           message.textContent = '';
 
           message.className = 'custom-product__message';
         }
 
-        /*
-            BUTTON LOADING
-          */
-
         addButton.disabled = true;
 
         addText.textContent = 'ADDING...';
 
         try {
-          /*
-              ADD PRODUCT
-            */
+          /* ======================================
+             ADD PRODUCT + RETURN CART SECTIONS
+          ====================================== */
+
+          const payload = {
+            items: [
+              {
+                id: variantId,
+
+                quantity: quantity,
+              },
+            ],
+
+            sections: ['cart-drawer', 'cart-icon-bubble'],
+
+            sections_url: window.location.pathname,
+          };
 
           const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
             method: 'POST',
@@ -1636,15 +1661,7 @@
               Accept: 'application/json',
             },
 
-            body: JSON.stringify({
-              items: [
-                {
-                  id: variantId,
-
-                  quantity: quantity,
-                },
-              ],
-            }),
+            body: JSON.stringify(payload),
           });
 
           const data = await response.json();
@@ -1654,16 +1671,8 @@
           }
 
           /*
-              BUTTON SUCCESS
-            */
-
-          addText.textContent = 'ADDED ✓';
-
-          /*
-              IMPORTANT:
-              NUK E SHFAQIM MË
-              "Added to cart" POSHTË.
-            */
+            Mos shfaq tekst poshtë.
+          */
 
           if (message) {
             message.textContent = '';
@@ -1672,127 +1681,60 @@
           }
 
           /*
-              GET CURRENT CART
-            */
-/*
-  GET UPDATED CART
-*/
+            BUTTON
+          */
 
-const cartResponse = await fetch(
-  window.Shopify.routes.root + 'cart.js',
-  {
-    headers: {
-      Accept: 'application/json'
-    }
-  }
-);
+          addText.textContent = 'ADDED ✓';
 
-const cart = await cartResponse.json();
+          /*
+            RENDER DRAWER
+          */
 
-updateCartCount(cart);
+          renderCartDrawer(data);
 
+          /*
+            CART COUNT FALLBACK
+          */
 
-/*
-  REFRESH CART DRAWER HTML
-*/
+          const cartResponse = await fetch(window.Shopify.routes.root + 'cart.js', {
+            headers: {
+              Accept: 'application/json',
+            },
+          });
 
-const sectionNames = [
-  'cart-drawer',
-  'cart-icon-bubble'
-];
+          if (cartResponse.ok) {
+            const cart = await cartResponse.json();
 
-const sectionsResponse = await fetch(
-  window.Shopify.routes.root +
-  '?sections=' +
-  sectionNames.join(',')
-);
+            updateCartCount(cart);
 
-const sections = await sectionsResponse.json();
+            document.dispatchEvent(
+              new CustomEvent('cart:updated', {
+                detail: {
+                  cart: cart,
+                },
+              })
+            );
+          }
 
+          /*
+            OPEN DRAWER
+          */
 
-/*
-  UPDATE CART DRAWER
-*/
+          requestAnimationFrame(function () {
+            openCartDrawer();
+          });
 
-if (sections['cart-drawer']) {
-
-  const parser = new DOMParser();
-
-  const documentHTML = parser.parseFromString(
-    sections['cart-drawer'],
-    'text/html'
-  );
-
-  const newDrawer =
-    documentHTML.querySelector(
-      'cart-drawer, .cart-drawer, [data-cart-drawer]'
-    );
-
-  const currentDrawer =
-    document.querySelector(
-      'cart-drawer, .cart-drawer, [data-cart-drawer]'
-    );
-
-  if (newDrawer && currentDrawer) {
-
-    currentDrawer.innerHTML =
-      newDrawer.innerHTML;
-
-  }
-
-}
-
-
-/*
-  UPDATE CART ICON / COUNT
-*/
-
-if (sections['cart-icon-bubble']) {
-
-  const parser = new DOMParser();
-
-  const documentHTML = parser.parseFromString(
-    sections['cart-icon-bubble'],
-    'text/html'
-  );
-
-  const newBubble =
-    documentHTML.querySelector(
-      '#cart-icon-bubble, .cart-icon-bubble, [data-cart-icon]'
-    );
-
-  const currentBubble =
-    document.querySelector(
-      '#cart-icon-bubble, .cart-icon-bubble, [data-cart-icon]'
-    );
-
-  if (newBubble && currentBubble) {
-
-    currentBubble.innerHTML =
-      newBubble.innerHTML;
-
-  }
-
-}
-
-
-/*
-  OPEN DRAWER AFTER REFRESH
-*/
-
-setTimeout(function () {
-
-  openCartDrawer();
-
-}, 50);
+          /*
+            BUTTON BACK TO NORMAL
+          */
 
           setTimeout(function () {
             updateVariant();
           }, 1200);
         } catch (error) {
           /*
-              Vetëm error shfaqet poshtë.
-            */
+            Vetëm error shfaqet poshtë.
+          */
 
           if (message) {
             message.textContent = error.message;
@@ -1806,8 +1748,8 @@ setTimeout(function () {
     }
 
     /* ============================================================
-       INITIAL STATE
-    ============================================================ */
+     INITIAL STATE
+  ============================================================ */
 
     const initialColor = section.querySelector('[data-color].is-active');
 
@@ -1817,6 +1759,7 @@ setTimeout(function () {
       visibleMedia = mediaItems.map(function (item, index) {
         return {
           item: item,
+
           thumbnail: thumbnails[index] || null,
         };
       });
@@ -1825,7 +1768,9 @@ setTimeout(function () {
     }
 
     updateVariant();
+
     updateSizeAvailability();
+
     updateQuantity();
   });
 </script>
