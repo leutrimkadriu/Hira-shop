@@ -317,6 +317,13 @@
       "settings": {
         "product": "originas-men"
       }
+    },
+    "test_kDxMe9": {
+      "type": "test",
+      "name": "Test1",
+      "settings": {
+        "product": "originals-men"
+      }
     }
   },
   "order": [
@@ -327,6 +334,7 @@
     "science_principles_kgBxxY",
     "categories_slider_qTR4HP",
     "customer_reviews_DBBwYy",
-    "test_e6EHb3"
+    "test_e6EHb3",
+    "test_kDxMe9"
   ]
 }
