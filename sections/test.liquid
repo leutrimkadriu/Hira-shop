@@ -183,6 +183,7 @@
     font-size: 18px;
     font-weight: 500;
     margin-top: 10px;
+    text-align:{{ section.settings.alignment }}
   }
 
   .product-card h3 a {
@@ -512,6 +513,12 @@
       "id": "heading_color",
       "label": "Heading color",
       "placeholder": "Default"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Text alignment",
+      "default": "center"
     }
   ],
 
