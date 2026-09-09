@@ -1674,42 +1674,117 @@
           /*
               GET CURRENT CART
             */
+/*
+  GET UPDATED CART
+*/
 
-          const cartResponse = await fetch(window.Shopify.routes.root + 'cart.js', {
-            method: 'GET',
+const cartResponse = await fetch(
+  window.Shopify.routes.root + 'cart.js',
+  {
+    headers: {
+      Accept: 'application/json'
+    }
+  }
+);
 
-            headers: {
-              Accept: 'application/json',
-            },
-          });
+const cart = await cartResponse.json();
 
-          if (!cartResponse.ok) {
-            throw new Error('Could not refresh cart');
-          }
+updateCartCount(cart);
 
-          const cart = await cartResponse.json();
 
-          /*
-              UPDATE CART COUNT
-            */
+/*
+  REFRESH CART DRAWER HTML
+*/
 
-          updateCartCount(cart);
+const sectionNames = [
+  'cart-drawer',
+  'cart-icon-bubble'
+];
 
-          /*
-              TRIGGER EVENTS FOR THEME
-            */
+const sectionsResponse = await fetch(
+  window.Shopify.routes.root +
+  '?sections=' +
+  sectionNames.join(',')
+);
 
-          dispatchCartEvents(cart);
+const sections = await sectionsResponse.json();
 
-          /*
-              OPEN CART DRAWER
-            */
 
-          openCartDrawer();
+/*
+  UPDATE CART DRAWER
+*/
 
-          /*
-              RETURN BUTTON
-            */
+if (sections['cart-drawer']) {
+
+  const parser = new DOMParser();
+
+  const documentHTML = parser.parseFromString(
+    sections['cart-drawer'],
+    'text/html'
+  );
+
+  const newDrawer =
+    documentHTML.querySelector(
+      'cart-drawer, .cart-drawer, [data-cart-drawer]'
+    );
+
+  const currentDrawer =
+    document.querySelector(
+      'cart-drawer, .cart-drawer, [data-cart-drawer]'
+    );
+
+  if (newDrawer && currentDrawer) {
+
+    currentDrawer.innerHTML =
+      newDrawer.innerHTML;
+
+  }
+
+}
+
+
+/*
+  UPDATE CART ICON / COUNT
+*/
+
+if (sections['cart-icon-bubble']) {
+
+  const parser = new DOMParser();
+
+  const documentHTML = parser.parseFromString(
+    sections['cart-icon-bubble'],
+    'text/html'
+  );
+
+  const newBubble =
+    documentHTML.querySelector(
+      '#cart-icon-bubble, .cart-icon-bubble, [data-cart-icon]'
+    );
+
+  const currentBubble =
+    document.querySelector(
+      '#cart-icon-bubble, .cart-icon-bubble, [data-cart-icon]'
+    );
+
+  if (newBubble && currentBubble) {
+
+    currentBubble.innerHTML =
+      newBubble.innerHTML;
+
+  }
+
+}
+
+
+/*
+  OPEN DRAWER AFTER REFRESH
+*/
+
+setTimeout(function () {
+
+  openCartDrawer();
+
+}, 50);
 
           setTimeout(function () {
             updateVariant();
