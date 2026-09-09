@@ -222,7 +222,7 @@
   }
 
   .variant-button.active {
-    background: black;
+    background: {{ section.settings.background }};
     color: white;
   }
 
@@ -520,6 +520,12 @@
       "id": "alignment",
       "label": "Text alignment",
       "default": "center"
+    },
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background",
+      "default": "linear-gradient(#ffffff, #000000)"
     }
   ],
 
