@@ -316,7 +316,9 @@
       "name": "Test1",
       "settings": {
         "product": "originas-men",
-        "heading_color": ""
+        "heading_color": "",
+        "alignment": "center",
+        "background": "linear-gradient(#ffffff, #000000)"
       }
     },
     "test_kDxMe9": {
@@ -324,7 +326,9 @@
       "name": "Test1",
       "settings": {
         "product": "originals-men",
-        "heading_color": "#D35959"
+        "heading_color": "#d35959",
+        "alignment": "center",
+        "background": "linear-gradient(180deg, rgba(218, 122, 122, 1) 40%, rgba(0, 0, 0, 1) 100%)"
       }
     }
   },
