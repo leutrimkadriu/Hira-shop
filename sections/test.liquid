@@ -3,10 +3,12 @@
 
 <div class="product-card">
   <div class="product-image">
-    <span class="sale-badge">
+    <span
+      class="sale-badge"
       {% unless current_variant.compare_at_price > current_variant.price %}
         style="display:none;"
       {% endunless %}
+    >
       {% if current_variant.compare_at_price > current_variant.price %}
         {% assign zbritje = current_variant.compare_at_price
           | minus: current_variant.price
@@ -33,10 +35,12 @@
   <span class="product-price">
     {{ current_variant.price | money }}
   </span>
-  <span class="compare-price">
+  <span
+    class="compare-price"
     {% unless current_variant.compare_at_price > current_variant.price %}
       style="display:none;"
     {% endunless -%}
+  >
     >{{ current_variant.compare_at_price | money -}}
   </span>
 
@@ -47,9 +51,6 @@
         class="variant-button {% if variant.id == current_variant.id %}active{% endif %}"
         data-variant-id="{{ variant.id }}"
         data-variant-title="{{ variant.title | escape }}"
-
-        data-price="{{ variant.price }}"
-        data-compare-price="{{ variant.compare_at_price | money }}"
 
         data-variant-price="{{ variant.price | money }}"
         data-variant-compare-price="{{ variant.compare_at_price | money }}"
