@@ -1,12 +1,19 @@
 {% assign product = section.settings.product %}
+{% assign current_variant = product.selected_or_first_available_variant %}
 
 <div class="product-card">
   <div class="product-image">
     {% if product.featured_image != blank %}
-      {{ product.featured_image | image_url: width: 600 | image_tag }}
+      <a href="{{ product.url }}">
+        {{
+          product.featured_image
+          | image_url: width: 600
+          | image_tag: class: 'product-main-image', alt: product.title
+        }}
+      </a>
     {% endif %}
   </div>
-  <h3>{{ product.title }}</h3>
+  <h3><a href="{{ product.url }}"></a>{{ product.title }}</h3>
   <p>Price : {{ product.price | money }}</p>
   <button type="button">Add to Cart</button>
 </div>
