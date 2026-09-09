@@ -1,115 +1,152 @@
 {% assign product = section.settings.product %}
 {% assign current_variant = product.selected_or_first_available_variant %}
 
-<div class="product-card">
-  <div class="product-image">
-    <span
-      class="sale-badge"
-      {% unless current_variant.compare_at_price > current_variant.price %}
-        style="display:none;"
-      {% endunless %}
-    >
-      {% if current_variant.compare_at_price > current_variant.price %}
-        {% assign zbritje = current_variant.compare_at_price
-          | minus: current_variant.price
-          | times: 100
-          | divided_by: current_variant.compare_at_price
-        %}
-
-        -{{ zbritje }} %
-      {% endif %}
-    </span>
-    {% if product.featured_image != blank %}
-      <a href="{{ product.url }}">
-        {{
-          product.featured_image
-          | image_url: width: 600
-          | image_tag: class: 'product-main-image', alt: product.title
-        }}
-      </a>
-    {% endif %}
-  </div>
-  <h3>
-    <a href="{{ product.url }}">{{ product.title }}</a>
-  </h3>
-  <span class="product-price">
-    {{ current_variant.price | money }}
-  </span>
-  <span
-    class="compare-price"
-    {% unless current_variant.compare_at_price > current_variant.price %}
-      style="display:none;"
-    {% endunless -%}
+{% if product != blank %}
+  <div
+    class="product-card"
+    id="ProductCard-{{ section.id }}"
   >
-    {{ current_variant.compare_at_price | money -}}
-  </span>
+    <div class="product-image">
+      <span
+        class="sale-badge"
+        {% unless current_variant.compare_at_price > current_variant.price %}
+          style="display:none;"
+        {% endunless %}
+      >
+        {% if current_variant.compare_at_price > current_variant.price %}
+          {% assign discount = current_variant.compare_at_price
+            | minus: current_variant.price
+            | times: 100
+            | divided_by: current_variant.compare_at_price
+          %}
 
-  <div class="variant-list">
-    {% for variant in product.variants %}
+          -{{ discount }}%
+        {% endif %}
+      </span>
+
+      {% if product.featured_image != blank %}
+        <a href="{{ product.url }}">
+          {{
+            product.featured_image
+            | image_url: width: 600
+            | image_tag: class: 'product-main-image', alt: product.title
+          }}
+        </a>
+      {% endif %}
+    </div>
+
+    <h3>
+      <a href="{{ product.url }}">
+        {{ product.title }}
+      </a>
+    </h3>
+
+    <div class="product-prices">
+      <span class="product-price">
+        {{ current_variant.price | money }}
+      </span>
+
+      <span
+        class="compare-price"
+        {% unless current_variant.compare_at_price > current_variant.price %}
+          style="display:none;"
+        {% endunless %}
+      >
+        {{ current_variant.compare_at_price | money }}
+      </span>
+    </div>
+
+    <div class="variant-list">
+      {% for variant in product.variants %}
+        {% assign variant_discount = 0 %}
+
+        {% if variant.compare_at_price > variant.price %}
+          {% assign variant_discount = variant.compare_at_price
+            | minus: variant.price
+            | times: 100
+            | divided_by: variant.compare_at_price
+          %}
+        {% endif %}
+
+        <button
+          type="button"
+          class="variant-button {% if variant.id == current_variant.id %}active{% endif %}"
+
+          data-variant-id="{{ variant.id }}"
+          data-variant-title="{{ variant.title | escape }}"
+          data-variant-price="{{ variant.price | money | escape }}"
+          data-variant-compare-price="{{ variant.compare_at_price | money | escape }}"
+          data-variant-discount="{{ variant_discount }}"
+          data-variant-available="{{ variant.available }}"
+
+          {% if variant.featured_image != blank %}
+            data-variant-image="{{ variant.featured_image | image_url: width: 600 }}"
+          {% elsif product.featured_image != blank %}
+            data-variant-image="{{ product.featured_image | image_url: width: 600 }}"
+          {% endif %}
+
+          {% unless variant.available %}
+            disabled
+          {% endunless %}
+        >
+          {{ variant.title }}
+        </button>
+      {% endfor %}
+    </div>
+
+    <input
+      type="hidden"
+      name="id"
+      class="variant-id-input"
+      value="{{ current_variant.id }}"
+    >
+
+    <div class="quantity-selector">
       <button
         type="button"
-        class="variant-button {% if variant.id == current_variant.id %}active{% endif %}"
-        data-variant-id="{{ variant.id }}"
-        data-variant-title="{{ variant.title | escape }}"
-
-        data-variant-price="{{ variant.price | money }}"
-        data-variant-compare-price="{{ variant.compare_at_price | money }}"
-        {% if variant.featured_image != blank %}
-          data-variant-image="{{ variant.featured_image | image_url: width: 600  }}"
-        {% endif %}
-        {%- unless variant.available -%}
-          disabled
-        {%- endunless -%}
+        class="quantity-minus"
+        aria-label="Decrease quantity"
       >
-        {{ variant.title }}
+        -
       </button>
-    {% endfor %}
-  </div>
 
-  <input
-    type="hidden"
-    name="id"
-    class="variant-id-input"
-    value="{{ current_variant.id }}"
-  >
-  {% if current_variant.available %}
+      <input
+        type="number"
+        class="quantity-input"
+        value="1"
+        min="1"
+      >
+
+      <button
+        type="button"
+        class="quantity-plus"
+        aria-label="Increase quantity"
+      >
+        +
+      </button>
+    </div>
+
     <button
       type="button"
       class="add-to-cart-button"
+      {% unless current_variant.available %}
+        disabled
+      {% endunless %}
     >
-      Add to Cart
+      {% if current_variant.available %}
+        Add to Cart
+      {% else %}
+        Sold Out
+      {% endif %}
     </button>
-  {% else %}
-    <button
-      type="button"
-      class="add-to-cart-button"
-      disabled
-    >
-      Sold Out
-    </button>
-  {% endif %}
-  <div class="quantity-selector">
-    <button
-      type="button"
-      class="quantity-minus"
-    >
-      -
-    </button>
-    <input
-      type="number"
-      class="quantity-input"
-      value="1"
-      min="1"
-    >
-    <button
-      type="button"
-      class="quantity-plus"
-    >
-      +
-    </button>
+
+    <p
+      class="cart-error"
+      role="status"
+      aria-live="polite"
+    ></p>
   </div>
-  <p class="cart-error"></p>
-</div>
+{% endif %}
 
 <style>
   .product-card {
@@ -134,20 +171,16 @@
     position: absolute;
     top: 10px;
     left: 10px;
-
     background: black;
     color: white;
-
     padding: 6px 10px;
     border-radius: 5px;
-
     z-index: 2;
   }
 
   .product-card h3 {
     font-size: 18px;
     font-weight: 500;
-
     margin-top: 10px;
   }
 
@@ -156,17 +189,32 @@
     text-decoration: none;
   }
 
+  .product-prices {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .product-price {
+    font-weight: 600;
+  }
+
+  .compare-price {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  .variant-list {
+    margin-top: 15px;
+  }
+
   .variant-button {
     width: auto;
-
     padding: 8px 12px;
     margin: 5px;
-
     background: white;
     color: black;
-
     border: 1px solid #ccc;
-
     cursor: pointer;
   }
 
@@ -180,17 +228,32 @@
     cursor: not-allowed;
   }
 
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .quantity-selector button {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+  }
+
   .add-to-cart-button {
     width: 100%;
-
     background: black;
     color: white;
-
     border: none;
-
     padding: 12px;
     margin-top: 15px;
-
     cursor: pointer;
   }
 
@@ -203,46 +266,251 @@
     opacity: 0.5;
   }
 
-  .quantity-selector {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    margin-top: 15px;
-  }
-
-  .quantity-selector button {
-    width: 40px;
-    height: 40px;
-
-    cursor: pointer;
-  }
-
-  .quantity-input {
-    width: 60px;
-    height: 40px;
-
-    text-align: center;
+  .cart-error {
+    margin-top: 10px;
+    font-size: 14px;
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const productCard = document.querySelector('#ProductCard-{{ section.id }}');
+
+    if (!productCard) return;
+
+    const variantButtons = productCard.querySelectorAll('.variant-button');
+
+    const variantInput = productCard.querySelector('.variant-id-input');
+
+    const productPrice = productCard.querySelector('.product-price');
+
+    const comparePrice = productCard.querySelector('.compare-price');
+
+    const saleBadge = productCard.querySelector('.sale-badge');
+
+    const productImage = productCard.querySelector('.product-main-image');
+
+    const addToCartButton = productCard.querySelector('.add-to-cart-button');
+
+    const quantityInput = productCard.querySelector('.quantity-input');
+
+    const minusButton = productCard.querySelector('.quantity-minus');
+
+    const plusButton = productCard.querySelector('.quantity-plus');
+
+    const cartError = productCard.querySelector('.cart-error');
+
+    /*
+      VARIANT CHANGE
+    */
+
+    variantButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.disabled) return;
+
+        /*
+          1. ACTIVE BUTTON
+        */
+
+        variantButtons.forEach((btn) => {
+          btn.classList.remove('active');
+        });
+
+        button.classList.add('active');
+
+        /*
+          2. VARIANT ID
+        */
+
+        const variantId = button.dataset.variantId;
+
+        variantInput.value = variantId;
+
+        /*
+          3. PRICE
+        */
+
+        const price = button.dataset.variantPrice;
+
+        productPrice.textContent = price;
+
+        /*
+          4. COMPARE PRICE
+        */
+
+        const compare = button.dataset.variantComparePrice;
+
+        const discount = Number(button.dataset.variantDiscount);
+
+        if (discount > 0) {
+          comparePrice.textContent = compare;
+
+          comparePrice.style.display = '';
+
+          saleBadge.textContent = `-${discount}%`;
+
+          saleBadge.style.display = '';
+        } else {
+          comparePrice.style.display = 'none';
+
+          saleBadge.style.display = 'none';
+        }
+
+        /*
+          5. IMAGE
+        */
+
+        const image = button.dataset.variantImage;
+
+        if (image && productImage) {
+          productImage.src = image;
+        }
+
+        /*
+          6. AVAILABILITY
+        */
+
+        const available = button.dataset.variantAvailable === 'true';
+
+        if (available) {
+          addToCartButton.disabled = false;
+
+          addToCartButton.textContent = 'Add to Cart';
+        } else {
+          addToCartButton.disabled = true;
+
+          addToCartButton.textContent = 'Sold Out';
+        }
+
+        cartError.textContent = '';
+      });
+    });
+
+    /*
+      QUANTITY PLUS
+    */
+
+    plusButton.addEventListener('click', () => {
+      let quantity = Number(quantityInput.value);
+
+      quantityInput.value = quantity + 1;
+    });
+
+    /*
+      QUANTITY MINUS
+    */
+
+    minusButton.addEventListener('click', () => {
+      let quantity = Number(quantityInput.value);
+
+      if (quantity > 1) {
+        quantityInput.value = quantity - 1;
+      }
+    });
+
+    /*
+      PREVENT INVALID QUANTITY
+    */
+
+    quantityInput.addEventListener('change', () => {
+      let quantity = Number(quantityInput.value);
+
+      if (!quantity || quantity < 1) {
+        quantityInput.value = 1;
+      }
+    });
+
+    /*
+      ADD TO CART
+    */
+
+    addToCartButton.addEventListener('click', async () => {
+      const variantId = Number(variantInput.value);
+
+      const quantity = Number(quantityInput.value);
+
+      if (!variantId) {
+        cartError.textContent = 'Variant not found.';
+
+        return;
+      }
+
+      if (!quantity || quantity < 1) {
+        cartError.textContent = 'Quantity must be at least 1.';
+
+        return;
+      }
+
+      cartError.textContent = '';
+
+      addToCartButton.disabled = true;
+
+      addToCartButton.textContent = 'Adding...';
+
+      const data = {
+        items: [
+          {
+            id: variantId,
+            quantity: quantity,
+          },
+        ],
+      };
+
+      try {
+        const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.description || 'Could not add product to cart.');
+        }
+
+        cartError.textContent = 'Product added to cart!';
+
+        addToCartButton.textContent = 'Added!';
+
+        setTimeout(() => {
+          addToCartButton.disabled = false;
+
+          addToCartButton.textContent = 'Add to Cart';
+        }, 1200);
+      } catch (error) {
+        cartError.textContent = error.message;
+
+        addToCartButton.disabled = false;
+
+        addToCartButton.textContent = 'Add to Cart';
+      }
+    });
+  });
+</script>
 
 {% schema %}
 {
   "name": "Test1",
   "tag": "section",
   "class": "test-section",
+
   "settings": [
     {
       "type": "product",
       "id": "product",
-      "label": "product"
+      "label": "Product"
     }
   ],
+
   "presets": [
     {
-      "name": "Test1",
-      "settings": {}
+      "name": "Test1"
     }
   ]
 }
