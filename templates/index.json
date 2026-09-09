@@ -11,7 +11,6 @@
   "sections": {
     "video_hero_8pFRpM": {
       "type": "video-hero",
-      "disabled": true,
       "name": "Video hero",
       "settings": {
         "heading": "Walk as if on clouds through autumn.",
@@ -22,7 +21,6 @@
     },
     "bestsellers_carousel_8MVGWK": {
       "type": "bestsellers-carousel",
-      "disabled": true,
       "name": "Bestsellers carousel",
       "settings": {
         "heading": "Our bestsellers",
@@ -45,7 +43,6 @@
     },
     "vet_section_ihY7wy": {
       "type": "vet-section",
-      "disabled": true,
       "name": "vet-image",
       "settings": {
         "image_picker": "shopify://shop_images/Web_Home_Info_Images_12.webp",
@@ -123,7 +120,6 @@
         "benefit_fyEqHt",
         "benefit_hYMwFR"
       ],
-      "disabled": true,
       "name": "Community gallery",
       "settings": {
         "heading": "Welcome to our universe",
@@ -165,7 +161,6 @@
         "principle_Xpmxdm",
         "principle_B7Ktkf"
       ],
-      "disabled": true,
       "name": "Science principles",
       "settings": {
         "heading": "The science behind the \"Ohhh\" moment",
@@ -242,7 +237,6 @@
         "category_A76Cqm",
         "category_M4q6Kt"
       ],
-      "disabled": true,
       "name": "Categories slider",
       "settings": {
         "heading": "Categories",
@@ -300,7 +294,6 @@
         "review_69T63h",
         "review_hdtTyg"
       ],
-      "disabled": true,
       "name": "Customer reviews",
       "settings": {
         "heading": "Customer Reviews",
@@ -313,6 +306,7 @@
     },
     "test_e6EHb3": {
       "type": "test",
+      "disabled": true,
       "name": "Test1",
       "settings": {
         "product": "step-ins-3-0-men",
