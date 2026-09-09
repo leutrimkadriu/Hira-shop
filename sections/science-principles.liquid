@@ -1,0 +1,501 @@
+<section
+  id="SciencePrinciples-{{ section.id }}"
+  class="science-principles"
+>
+  <div class="science-principles__container">
+
+    <!-- HEADER -->
+    <div class="science-principles__header">
+
+      {% if section.settings.heading != blank %}
+        <h2 class="science-principles__heading">
+          {{ section.settings.heading }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.subheading != blank %}
+        <div class="science-principles__subheading">
+          {{ section.settings.subheading }}
+        </div>
+      {% endif %}
+
+    </div>
+
+
+    <!-- CONTENT -->
+    <div class="science-principles__grid">
+
+      <!-- LEFT IMAGE -->
+      <div class="science-principles__media">
+
+        {% if section.settings.image != blank %}
+
+          {{
+            section.settings.image
+            | image_url: width: 1800
+            | image_tag:
+              loading: 'lazy',
+              widths: '600, 900, 1200, 1500, 1800',
+              sizes: '(min-width: 900px) 60vw, 100vw',
+              class: 'science-principles__image'
+          }}
+
+        {% else %}
+
+          <div class="science-principles__placeholder">
+            Select image
+          </div>
+
+        {% endif %}
+
+      </div>
+
+
+      <!-- RIGHT ITEMS -->
+      <div class="science-principles__items">
+
+        {% for block in section.blocks %}
+
+          <div
+            class="science-principles__item"
+            {{ block.shopify_attributes }}
+          >
+
+            <div class="science-principles__number">
+              {% if forloop.index < 10 %}
+                0{{ forloop.index }}
+              {% else %}
+                {{ forloop.index }}
+              {% endif %}
+            </div>
+
+
+            <div class="science-principles__item-content">
+
+              {% if block.settings.title != blank %}
+                <h3 class="science-principles__item-title">
+                  {{ block.settings.title }}
+                </h3>
+              {% endif %}
+
+              {% if block.settings.text != blank %}
+                <div class="science-principles__item-text">
+                  {{ block.settings.text }}
+                </div>
+              {% endif %}
+
+            </div>
+
+          </div>
+
+        {% endfor %}
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<style>
+
+#SciencePrinciples-{{ section.id }} {
+  width: 100%;
+  padding:
+    {{ section.settings.padding_top }}px
+    20px
+    {{ section.settings.padding_bottom }}px;
+
+  background: {{ section.settings.background }};
+  color: {{ section.settings.text_color }};
+}
+
+#SciencePrinciples-{{ section.id }} * {
+  box-sizing: border-box;
+}
+
+
+/* CONTAINER */
+
+#SciencePrinciples-{{ section.id }} .science-principles__container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+/* HEADER */
+
+#SciencePrinciples-{{ section.id }} .science-principles__header {
+  margin-bottom: 24px;
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__heading {
+  margin: 0 0 6px;
+
+  font-size: clamp(30px, 3vw, 42px);
+  line-height: 1.05;
+
+  font-weight: 600;
+
+  letter-spacing: -0.035em;
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__subheading {
+  color: {{ section.settings.muted_text_color }};
+
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__subheading p {
+  margin: 0;
+}
+
+
+/* GRID */
+
+#SciencePrinciples-{{ section.id }} .science-principles__grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.45fr)
+    minmax(360px, 1fr);
+
+  gap: 28px;
+
+  align-items: start;
+}
+
+
+/* IMAGE */
+
+#SciencePrinciples-{{ section.id }} .science-principles__media {
+  width: 100%;
+
+  aspect-ratio: 1.47 / 1;
+
+  overflow: hidden;
+
+  background: #f4f4f4;
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  object-position:
+    {{ section.settings.image_position }};
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__placeholder {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #888;
+
+  background: #f2f2f2;
+}
+
+
+/* ITEMS */
+
+#SciencePrinciples-{{ section.id }} .science-principles__items {
+  border-top:
+    1px solid
+    {{ section.settings.border_color }};
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__item {
+  display: grid;
+
+  grid-template-columns: 56px 1fr;
+
+  gap: 18px;
+
+  padding: 26px 8px;
+
+  border-bottom:
+    1px solid
+    {{ section.settings.border_color }};
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__number {
+  padding-top: 1px;
+
+  font-size: 16px;
+  line-height: 1.2;
+
+  font-weight: 400;
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__item-title {
+  margin: 0 0 7px;
+
+  font-size: 18px;
+  line-height: 1.2;
+
+  font-weight: 600;
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__item-text {
+  max-width: 520px;
+
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+#SciencePrinciples-{{ section.id }} .science-principles__item-text p {
+  margin: 0;
+}
+
+
+/* TABLET */
+
+@media screen and (max-width: 1000px) {
+
+  #SciencePrinciples-{{ section.id }} .science-principles__grid {
+    grid-template-columns:
+      minmax(0, 1.2fr)
+      minmax(320px, 1fr);
+  }
+
+}
+
+
+/* MOBILE */
+
+@media screen and (max-width: 780px) {
+
+  #SciencePrinciples-{{ section.id }} {
+    padding:
+      {{ section.settings.mobile_padding_top }}px
+      14px
+      {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__header {
+    margin-bottom: 18px;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__heading {
+    font-size: 30px;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__subheading {
+    font-size: 15px;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__grid {
+    grid-template-columns: 1fr;
+
+    gap: 18px;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__media {
+    aspect-ratio: 1.3 / 1;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__item {
+    grid-template-columns: 42px 1fr;
+
+    gap: 12px;
+
+    padding: 20px 0;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__number {
+    font-size: 14px;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__item-title {
+    font-size: 17px;
+  }
+
+  #SciencePrinciples-{{ section.id }} .science-principles__item-text {
+    font-size: 15px;
+  }
+
+}
+
+</style>
+
+
+{% schema %}
+{
+  "name": "Science principles",
+  "max_blocks": 6,
+
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The science behind the \"Ohhh\" moment"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Our products are based on three principles. None of them is optional.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "default": "center center",
+      "options": [
+        {
+          "value": "left center",
+          "label": "Left"
+        },
+        {
+          "value": "center center",
+          "label": "Center"
+        },
+        {
+          "value": "right center",
+          "label": "Right"
+        },
+        {
+          "value": "center top",
+          "label": "Top"
+        },
+        {
+          "value": "center bottom",
+          "label": "Bottom"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Subtitle color",
+      "default": "#5f5f5f"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Divider color",
+      "default": "#dddddd"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top spacing",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom spacing",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 65
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 45
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "principle",
+      "name": "Principle",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Premium comfort"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Designed for soft comfort and support with every step.</p>"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Science principles",
+      "blocks": [
+        {
+          "type": "principle",
+          "settings": {
+            "title": "Cloud-soft insole",
+            "text": "<p>A soft sole designed to cushion every step and keep you comfortable all day.</p>"
+          }
+        },
+        {
+          "type": "principle",
+          "settings": {
+            "title": "Statement designs",
+            "text": "<p>Distinctive models designed with their own unique character and style.</p>"
+          }
+        },
+        {
+          "type": "principle",
+          "settings": {
+            "title": "Tested premium quality",
+            "text": "<p>Carefully selected materials and quality-focused production standards.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

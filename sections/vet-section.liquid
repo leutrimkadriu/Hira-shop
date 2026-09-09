@@ -1,0 +1,369 @@
+<section
+  id="HeroImage-{{ section.id }}"
+  class="hero-image-section"
+>
+  <div class="hero-image-section__inner">
+
+    {% if section.settings.image_picker != blank %}
+      {{
+        section.settings.image_picker
+        | image_url: width: 2000
+        | image_tag:
+          class: 'hero-image-section__image',
+          loading: 'eager',
+          fetchpriority: 'high'
+      }}
+    {% endif %}
+
+    <div class="hero-image-section__overlay"></div>
+
+    <div class="hero-image-section__content">
+
+      {% if section.settings.heading != blank %}
+        <h2 class="hero-image-section__heading">
+          {{ section.settings.heading }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.text != blank %}
+        <p class="hero-image-section__text">
+          {{ section.settings.text }}
+        </p>
+      {% endif %}
+
+      {% if section.settings.button_text != blank %}
+        <a
+          class="hero-image-section__button"
+          href="{{ section.settings.button_link | default: '#' }}"
+        >
+          {{ section.settings.button_text }}
+        </a>
+      {% endif %}
+
+    </div>
+
+  </div>
+</section>
+
+<style>
+  #HeroImage-{{ section.id }} {
+    width: 100%;
+  }
+
+  #HeroImage-{{ section.id }} *,
+  #HeroImage-{{ section.id }} *::before,
+  #HeroImage-{{ section.id }} *::after {
+    box-sizing: border-box;
+  }
+
+  /* =========================
+     WRAPPER
+  ========================= */
+
+  #HeroImage-{{ section.id }} .hero-image-section__inner {
+    position: relative;
+
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
+
+    min-height: 620px;
+
+    background: #eee;
+  }
+
+  /* =========================
+     IMAGE
+  ========================= */
+
+  #HeroImage-{{ section.id }} .hero-image-section__image {
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    object-position: center;
+  }
+
+  /* =========================
+     DARK OVERLAY
+  ========================= */
+
+  #HeroImage-{{ section.id }} .hero-image-section__overlay {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1;
+
+    pointer-events: none;
+
+    background:
+      linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.48) 0%,
+        rgba(0, 0, 0, 0.15) 48%,
+        rgba(0, 0, 0, 0) 75%
+      );
+  }
+
+  /* =========================
+     CONTENT
+  ========================= */
+
+  #HeroImage-{{ section.id }} .hero-image-section__content {
+    position: absolute;
+
+    left: 42px;
+    right: 42px;
+    bottom: 42px;
+
+    z-index: 2;
+
+    max-width: 820px;
+
+    color: #fff;
+
+    text-align: left;
+  }
+
+  /* =========================
+     HEADING
+  ========================= */
+
+  #HeroImage-{{ section.id }} .hero-image-section__heading {
+    margin: 0 0 12px;
+
+    max-width: 760px;
+
+    color: #fff;
+
+    font-size: clamp(42px, 4.3vw, 64px);
+    line-height: 0.98;
+
+    font-weight: 700;
+
+    letter-spacing: -0.035em;
+  }
+
+  /* =========================
+     TEXT
+  ========================= */
+
+  #HeroImage-{{ section.id }} .hero-image-section__text {
+    margin: 0 0 22px;
+
+    max-width: 760px;
+
+    color: #fff;
+
+    font-size: 18px;
+    line-height: 1.45;
+  }
+
+  /* =========================
+     BUTTON
+  ========================= */
+
+  #HeroImage-{{ section.id }} .hero-image-section__button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 46px;
+
+    padding: 12px 24px;
+
+    border: 1px solid #fff;
+
+    background: #fff;
+    color: #111;
+
+    font-size: 14px;
+    line-height: 1;
+
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  #HeroImage-{{ section.id }} .hero-image-section__button:hover {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+  }
+
+  /* =========================
+     TABLET
+  ========================= */
+
+  @media screen and (max-width: 990px) {
+
+    #HeroImage-{{ section.id }} .hero-image-section__inner {
+      min-height: 560px;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__content {
+      left: 30px;
+      right: 30px;
+      bottom: 30px;
+
+      max-width: 700px;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__heading {
+      font-size: 44px;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__text {
+      font-size: 17px;
+    }
+
+  }
+
+  /* =========================
+     MOBILE
+  ========================= */
+
+  @media screen and (max-width: 749px) {
+
+    #HeroImage-{{ section.id }} .hero-image-section__inner {
+      min-height: 520px;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__image {
+      object-position: 58% center;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__overlay {
+      background:
+        linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.62) 0%,
+          rgba(0, 0, 0, 0.27) 52%,
+          rgba(0, 0, 0, 0.03) 78%
+        );
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__content {
+      left: 18px;
+      right: 18px;
+      bottom: 20px;
+
+      max-width: none;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__heading {
+      margin-bottom: 10px;
+
+      max-width: 330px;
+
+      font-size: 34px;
+      line-height: 1;
+
+      letter-spacing: -0.03em;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__text {
+      margin-bottom: 18px;
+
+      max-width: 340px;
+
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__button {
+      min-height: 44px;
+
+      padding: 11px 20px;
+
+      font-size: 14px;
+    }
+
+  }
+
+  /* =========================
+     SMALL MOBILE
+  ========================= */
+
+  @media screen and (max-width: 390px) {
+
+    #HeroImage-{{ section.id }} .hero-image-section__inner {
+      min-height: 500px;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__content {
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__heading {
+      font-size: 30px;
+    }
+
+    #HeroImage-{{ section.id }} .hero-image-section__text {
+      font-size: 14px;
+    }
+
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Hero image",
+
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_picker",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "These styles are not coming back"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Last chance to shop our summer styles: Secure your favorites before they’re gone for good."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Hero image"
+    }
+  ]
+}
+{% endschema %}

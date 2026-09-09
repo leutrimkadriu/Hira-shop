@@ -1,0 +1,937 @@
+<section
+  id="CommunityGallery-{{ section.id }}"
+  class="community-gallery"
+>
+  <div class="community-gallery__container">
+
+    <!-- HEADER -->
+    <div class="community-gallery__header">
+
+      {% if section.settings.heading != blank %}
+        <h2 class="community-gallery__heading">
+          {{ section.settings.heading }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.text != blank %}
+        <div class="community-gallery__text">
+          {{ section.settings.text }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.instagram_text != blank %}
+        <div class="community-gallery__instagram">
+          {{ section.settings.instagram_text }}
+        </div>
+      {% endif %}
+
+    </div>
+
+
+    <!-- MEDIA -->
+    {% if section.blocks.size > 0 %}
+
+      <div class="community-gallery__media-wrapper">
+
+        <button
+          type="button"
+          class="community-gallery__arrow community-gallery__arrow--prev"
+          data-community-prev
+          aria-label="Previous media"
+        >
+          ←
+        </button>
+
+        <div
+          class="community-gallery__track"
+          data-community-track
+        >
+
+          {% for block in section.blocks %}
+
+            {% if block.type == 'media' %}
+
+              <div
+                class="community-gallery__card"
+                {{ block.shopify_attributes }}
+              >
+
+                {% if block.settings.video != blank %}
+
+                  <div
+                    class="community-gallery__video-wrapper"
+                    data-video-wrapper
+                  >
+
+                    {{
+                      block.settings.video
+                      | video_tag:
+                        autoplay: true,
+                        loop: true,
+                        muted: true,
+                        controls: false,
+                        playsinline: true,
+                        class: 'community-gallery__video'
+                    }}
+
+                    <button
+                      type="button"
+                      class="community-gallery__play-button"
+                      data-video-toggle
+                      aria-label="Play or pause video"
+                    >
+                      <span data-play-icon>❚❚</span>
+                    </button>
+
+                  </div>
+
+
+                {% elsif block.settings.image != blank %}
+
+                  <div class="community-gallery__image-wrapper">
+
+                    {{
+                      block.settings.image
+                      | image_url: width: 900
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '300, 450, 600, 750, 900',
+                        sizes: '(min-width: 1200px) 15vw, (min-width: 750px) 24vw, 70vw',
+                        class: 'community-gallery__image'
+                    }}
+
+                  </div>
+
+                {% else %}
+
+                  <div class="community-gallery__placeholder">
+                    Add video or image
+                  </div>
+
+                {% endif %}
+
+              </div>
+
+            {% endif %}
+
+          {% endfor %}
+
+        </div>
+
+
+        <button
+          type="button"
+          class="community-gallery__arrow community-gallery__arrow--next"
+          data-community-next
+          aria-label="Next media"
+        >
+          →
+        </button>
+
+      </div>
+
+    {% endif %}
+
+
+    <!-- BENEFITS -->
+    <div class="community-gallery__benefits">
+
+      {% for block in section.blocks %}
+
+        {% if block.type == 'benefit' %}
+
+          <div
+            class="community-gallery__benefit"
+            {{ block.shopify_attributes }}
+          >
+
+            <div class="community-gallery__benefit-icon">
+
+              {% if block.settings.icon == 'return' %}
+
+                <svg
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M36 15a15 15 0 1 0 2.5 17"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="M36 8v8h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                </svg>
+
+              {% elsif block.settings.icon == 'cloud' %}
+
+                <svg
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M13 34h23a8 8 0 0 0 0-16h-1A12 12 0 0 0 12 20a7 7 0 0 0 1 14Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                </svg>
+
+              {% elsif block.settings.icon == 'heart' %}
+
+                <svg
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M24 39S7 29 7 17a9 9 0 0 1 16-5 9 9 0 0 1 18 5c0 12-17 22-17 22Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                </svg>
+
+              {% else %}
+
+                <svg
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="18"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="m16 24 5 5 11-12"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                </svg>
+
+              {% endif %}
+
+            </div>
+
+
+            {% if block.settings.title != blank %}
+              <div class="community-gallery__benefit-title">
+                {{ block.settings.title }}
+              </div>
+            {% endif %}
+
+
+            {% if block.settings.subtitle != blank %}
+              <div class="community-gallery__benefit-subtitle">
+                {{ block.settings.subtitle }}
+              </div>
+            {% endif %}
+
+          </div>
+
+        {% endif %}
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+</section>
+
+
+<style>
+
+#CommunityGallery-{{ section.id }} {
+  width: 100%;
+  padding: 55px 20px 70px;
+  background: {{ section.settings.background }};
+  color: {{ section.settings.text_color }};
+}
+
+#CommunityGallery-{{ section.id }} * {
+  box-sizing: border-box;
+}
+
+
+/* CONTAINER */
+
+#CommunityGallery-{{ section.id }} .community-gallery__container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+/* HEADER */
+
+#CommunityGallery-{{ section.id }} .community-gallery__header {
+  margin-bottom: 14px;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__heading {
+  margin: 0 0 8px;
+
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1.05;
+
+  font-weight: 600;
+
+  letter-spacing: -0.035em;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__text {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__text p {
+  margin: 0;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__instagram {
+  margin-top: 2px;
+
+  font-size: 14px;
+}
+
+
+/* ============================================================
+   MEDIA
+============================================================ */
+
+#CommunityGallery-{{ section.id }} .community-gallery__media-wrapper {
+  position: relative;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__track {
+  display: grid;
+  grid-auto-flow: column;
+
+  grid-auto-columns: minmax(180px, 1fr);
+
+  gap: 4px;
+
+  overflow-x: auto;
+
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+
+  scrollbar-width: none;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__card {
+  position: relative;
+
+  min-width: 0;
+
+  aspect-ratio: 9 / 16;
+
+  overflow: hidden;
+
+  background: #f2f2f2;
+
+  scroll-snap-align: start;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__video-wrapper,
+#CommunityGallery-{{ section.id }} .community-gallery__image-wrapper {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__video,
+#CommunityGallery-{{ section.id }} .community-gallery__image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* PLAY */
+
+#CommunityGallery-{{ section.id }} .community-gallery__play-button {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.88);
+
+  color: #111;
+
+  font-size: 15px;
+
+  cursor: pointer;
+
+  opacity: 0;
+
+  transition: opacity .2s ease;
+}
+
+#CommunityGallery-{{ section.id }}
+.community-gallery__video-wrapper:hover
+.community-gallery__play-button {
+  opacity: 1;
+}
+
+
+/* PLACEHOLDER */
+
+#CommunityGallery-{{ section.id }} .community-gallery__placeholder {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  color: #777;
+
+  text-align: center;
+}
+
+
+/* ============================================================
+   ARROWS
+============================================================ */
+
+#CommunityGallery-{{ section.id }} .community-gallery__arrow {
+  position: absolute;
+
+  top: 50%;
+
+  z-index: 3;
+
+  transform: translateY(-50%);
+
+  width: 42px;
+  height: 42px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.94);
+
+  color: #111;
+
+  font-size: 19px;
+
+  cursor: pointer;
+
+  box-shadow: 0 3px 15px rgba(0,0,0,.08);
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__arrow--prev {
+  left: 10px;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__arrow--next {
+  right: 10px;
+}
+
+
+/* ============================================================
+   BENEFITS
+============================================================ */
+
+#CommunityGallery-{{ section.id }} .community-gallery__benefits {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 40px;
+
+  margin-top: 70px;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__benefit {
+  min-width: 0;
+
+  text-align: center;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__benefit-icon {
+  width: 48px;
+  height: 48px;
+
+  margin: 0 auto 12px;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__benefit-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__benefit-title {
+  max-width: 230px;
+
+  margin: 0 auto;
+
+  font-size: 14px;
+  line-height: 1.25;
+
+  font-weight: 500;
+
+  text-transform: uppercase;
+}
+
+#CommunityGallery-{{ section.id }} .community-gallery__benefit-subtitle {
+  margin-top: 5px;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+
+/* ============================================================
+   DESKTOP WIDTH
+============================================================ */
+
+@media screen and (min-width: 1200px) {
+
+  #CommunityGallery-{{ section.id }} .community-gallery__track {
+    grid-auto-columns: calc((100% - 24px) / 7);
+  }
+
+}
+
+
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media screen and (max-width: 1199px) and (min-width: 751px) {
+
+  #CommunityGallery-{{ section.id }} .community-gallery__track {
+    grid-auto-columns: calc((100% - 12px) / 4);
+  }
+
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media screen and (max-width: 750px) {
+
+  #CommunityGallery-{{ section.id }} {
+    padding:
+      {{ section.settings.mobile_padding_top }}px
+      14px
+      {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+  #CommunityGallery-{{ section.id }} .community-gallery__heading {
+    font-size: 28px;
+  }
+
+  #CommunityGallery-{{ section.id }} .community-gallery__track {
+    grid-auto-columns: 68%;
+    gap: 6px;
+  }
+
+  #CommunityGallery-{{ section.id }} .community-gallery__arrow {
+    display: none;
+  }
+
+  #CommunityGallery-{{ section.id }} .community-gallery__play-button {
+    width: 42px;
+    height: 42px;
+
+    opacity: 1;
+
+    background: rgba(255,255,255,.82);
+  }
+
+  #CommunityGallery-{{ section.id }} .community-gallery__benefits {
+    grid-template-columns: 1fr;
+
+    gap: 38px;
+
+    margin-top: 50px;
+  }
+
+}
+
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const section =
+    document.getElementById(
+      'CommunityGallery-{{ section.id }}'
+    );
+
+  if (!section) return;
+
+
+  /* =========================================================
+     SLIDER
+  ========================================================= */
+
+  const track =
+    section.querySelector(
+      '[data-community-track]'
+    );
+
+  const previous =
+    section.querySelector(
+      '[data-community-prev]'
+    );
+
+  const next =
+    section.querySelector(
+      '[data-community-next]'
+    );
+
+
+  function getScrollAmount() {
+
+    const firstCard =
+      section.querySelector(
+        '.community-gallery__card'
+      );
+
+    if (!firstCard) {
+      return 300;
+    }
+
+    return firstCard.offsetWidth + 8;
+
+  }
+
+
+  if (previous && track) {
+
+    previous.addEventListener(
+      'click',
+      function () {
+
+        track.scrollBy({
+          left: -getScrollAmount(),
+          behavior: 'smooth'
+        });
+
+      }
+    );
+
+  }
+
+
+  if (next && track) {
+
+    next.addEventListener(
+      'click',
+      function () {
+
+        track.scrollBy({
+          left: getScrollAmount(),
+          behavior: 'smooth'
+        });
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     VIDEO PLAY / PAUSE
+  ========================================================= */
+
+  const videoWrappers =
+    section.querySelectorAll(
+      '[data-video-wrapper]'
+    );
+
+
+  videoWrappers.forEach(
+    function (wrapper) {
+
+      const video =
+        wrapper.querySelector('video');
+
+      const button =
+        wrapper.querySelector(
+          '[data-video-toggle]'
+        );
+
+      const icon =
+        wrapper.querySelector(
+          '[data-play-icon]'
+        );
+
+
+      if (!video || !button) {
+        return;
+      }
+
+
+      button.addEventListener(
+        'click',
+        function () {
+
+          if (video.paused) {
+
+            video.play();
+
+            if (icon) {
+              icon.textContent =
+                '❚❚';
+            }
+
+          } else {
+
+            video.pause();
+
+            if (icon) {
+              icon.textContent =
+                '▶';
+            }
+
+          }
+
+        }
+      );
+
+
+      video.addEventListener(
+        'play',
+        function () {
+
+          if (icon) {
+            icon.textContent =
+              '❚❚';
+          }
+
+        }
+      );
+
+
+      video.addEventListener(
+        'pause',
+        function () {
+
+          if (icon) {
+            icon.textContent =
+              '▶';
+          }
+
+        }
+      );
+
+    }
+  );
+
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Community gallery",
+  "max_blocks": 15,
+
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Welcome to our universe"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>This is how our community styles their favorites!</p>"
+    },
+    {
+      "type": "text",
+      "id": "instagram_text",
+      "label": "Instagram text",
+      "default": "Tag us @yourbrand"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#111111"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 45
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "media",
+      "name": "Media",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "return",
+          "options": [
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "cloud",
+              "label": "Comfort"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Risk-free for 30 days"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Community gallery",
+      "blocks": [
+        {
+          "type": "media"
+        },
+        {
+          "type": "media"
+        },
+        {
+          "type": "media"
+        },
+        {
+          "type": "media"
+        },
+        {
+          "type": "media"
+        },
+        {
+          "type": "media"
+        },
+        {
+          "type": "media"
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "return",
+            "title": "Risk-free for 30 days"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "cloud",
+            "title": "Every step with heavenly comfort"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "heart",
+            "title": "Over 1 million customers"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

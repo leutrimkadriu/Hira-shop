@@ -1,0 +1,886 @@
+<section
+  id="CategoriesSlider-{{ section.id }}"
+  class="categories-slider"
+>
+  <div class="categories-slider__container">
+
+    {% if section.settings.heading != blank %}
+      <h2 class="categories-slider__heading">
+        {{ section.settings.heading }}
+      </h2>
+    {% endif %}
+
+    <div class="categories-slider__wrapper">
+
+      <div
+        class="categories-slider__track"
+        data-categories-track
+      >
+
+        {% for block in section.blocks %}
+
+          <article
+            class="categories-slider__card"
+            {{ block.shopify_attributes }}
+          >
+
+            {% if block.settings.link != blank %}
+              <a
+                href="{{ block.settings.link }}"
+                class="categories-slider__link"
+                aria-label="{{ block.settings.title | escape }}"
+              >
+            {% else %}
+              <div class="categories-slider__link">
+            {% endif %}
+
+
+              <div class="categories-slider__media">
+
+                {% if block.settings.image != blank %}
+
+                  {{
+                    block.settings.image
+                    | image_url: width: 1200
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '400, 600, 800, 1000, 1200',
+                      sizes: '(min-width: 1200px) 27vw, (min-width: 750px) 42vw, 78vw',
+                      class: 'categories-slider__image'
+                  }}
+
+                {% else %}
+
+                  {{ 'collection-1'
+                    | placeholder_svg_tag:
+                    'categories-slider__placeholder'
+                  }}
+
+                {% endif %}
+
+
+                <div class="categories-slider__overlay"></div>
+
+
+                <div class="categories-slider__content">
+
+                  {% if block.settings.title != blank %}
+
+                    <h3 class="categories-slider__title">
+                      {{ block.settings.title }}
+                    </h3>
+
+                  {% endif %}
+
+
+                  <span
+                    class="categories-slider__card-arrow"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+
+                </div>
+
+              </div>
+
+
+            {% if block.settings.link != blank %}
+              </a>
+            {% else %}
+              </div>
+            {% endif %}
+
+          </article>
+
+        {% endfor %}
+
+      </div>
+
+
+      {% if section.blocks.size > 1 %}
+
+        <div class="categories-slider__controls">
+
+          <div class="categories-slider__arrows">
+
+            <button
+              type="button"
+              class="categories-slider__arrow"
+              data-categories-prev
+              aria-label="Previous categories"
+            >
+              ←
+            </button>
+
+            <button
+              type="button"
+              class="categories-slider__arrow"
+              data-categories-next
+              aria-label="Next categories"
+            >
+              →
+            </button>
+
+          </div>
+
+
+          <div class="categories-slider__progress">
+
+            <span
+              class="categories-slider__progress-bar"
+              data-categories-progress
+            ></span>
+
+          </div>
+
+        </div>
+
+      {% endif %}
+
+    </div>
+
+  </div>
+</section>
+
+
+<style>
+
+#CategoriesSlider-{{ section.id }} {
+  width: 100%;
+
+  padding:
+    {{ section.settings.padding_top }}px
+    0
+    {{ section.settings.padding_bottom }}px;
+
+  background:
+    {{ section.settings.background }};
+
+  color:
+    {{ section.settings.text_color }};
+
+  overflow: hidden;
+}
+
+#CategoriesSlider-{{ section.id }} * {
+  box-sizing: border-box;
+}
+
+
+/* CONTAINER */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__container {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 0 20px;
+}
+
+
+/* HEADING */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__heading {
+  margin: 0 0 28px;
+
+  font-size:
+    {{ section.settings.heading_size }}px;
+
+  line-height: 1;
+
+  font-weight: 600;
+
+  letter-spacing: -.035em;
+}
+
+
+/* TRACK */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__track {
+  display: grid;
+
+  grid-auto-flow: column;
+
+  /*
+    3 cards afërsisht të plota
+    + pjesë e kartës tjetër
+  */
+  grid-auto-columns: 28.5%;
+
+  gap: 18px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+
+  scroll-snap-type: x mandatory;
+
+  overscroll-behavior-inline: contain;
+
+  scrollbar-width: none;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__track::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* CARD */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__card {
+  min-width: 0;
+
+  scroll-snap-align: start;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__link {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  color: inherit;
+
+  text-decoration: none;
+}
+
+
+/* MEDIA */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__media {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio:
+    {{ section.settings.card_ratio }};
+
+  overflow: hidden;
+
+  background: #eee;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__image,
+#CategoriesSlider-{{ section.id }} .categories-slider__placeholder {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition:
+    transform .4s ease;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__link:hover .categories-slider__image {
+  transform: scale(1.025);
+}
+
+
+/* OVERLAY */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,.42) 0%,
+      rgba(0,0,0,.12) 34%,
+      rgba(0,0,0,0) 60%
+    );
+
+  pointer-events: none;
+}
+
+
+/* CARD CONTENT */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__content {
+  position: absolute;
+
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+
+  z-index: 2;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  color: #fff;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__title {
+  margin: 0;
+
+  font-size:
+    {{ section.settings.card_title_size }}px;
+
+  line-height: 1.1;
+
+  font-weight: 500;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__card-arrow {
+  flex-shrink: 0;
+
+  font-size: 26px;
+
+  line-height: 1;
+
+  transition:
+    transform .2s ease;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__link:hover .categories-slider__card-arrow {
+  transform: translateX(4px);
+}
+
+
+/* CONTROLS */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__controls {
+  display: flex;
+
+  align-items: center;
+
+  gap: 28px;
+
+  margin-top: 18px;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__arrows {
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__arrow {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: currentColor;
+
+  font-size: 26px;
+
+  cursor: pointer;
+
+  transition:
+    opacity .2s ease;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__arrow:hover {
+  opacity: .55;
+}
+
+
+/* PROGRESS */
+
+#CategoriesSlider-{{ section.id }} .categories-slider__progress {
+  position: relative;
+
+  width: 310px;
+  max-width: 45vw;
+
+  height: 2px;
+
+  overflow: hidden;
+
+  background: #cfcfcf;
+}
+
+#CategoriesSlider-{{ section.id }} .categories-slider__progress-bar {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 30%;
+  height: 100%;
+
+  background: #111;
+}
+
+
+/* TABLET */
+
+@media screen and (max-width: 1100px) {
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__track {
+    grid-auto-columns: 42%;
+  }
+
+}
+
+
+/* MOBILE */
+
+@media screen and (max-width: 700px) {
+
+  #CategoriesSlider-{{ section.id }} {
+    padding:
+      {{ section.settings.mobile_padding_top }}px
+      0
+      {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__container {
+    padding: 0 14px;
+  }
+
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__heading {
+    margin-bottom: 20px;
+
+    font-size:
+      {{ section.settings.mobile_heading_size }}px;
+  }
+
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__track {
+    grid-auto-columns: 78%;
+
+    gap: 10px;
+  }
+
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__content {
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+  }
+
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__title {
+    font-size: 19px;
+  }
+
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__controls {
+    gap: 14px;
+
+    margin-top: 14px;
+  }
+
+
+  #CategoriesSlider-{{ section.id }} .categories-slider__progress {
+    flex: 1;
+
+    width: auto;
+    max-width: none;
+  }
+
+}
+
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const section =
+    document.getElementById(
+      'CategoriesSlider-{{ section.id }}'
+    );
+
+  if (!section) return;
+
+
+  const track =
+    section.querySelector(
+      '[data-categories-track]'
+    );
+
+  const previous =
+    section.querySelector(
+      '[data-categories-prev]'
+    );
+
+  const next =
+    section.querySelector(
+      '[data-categories-next]'
+    );
+
+  const progress =
+    section.querySelector(
+      '[data-categories-progress]'
+    );
+
+
+  if (!track) return;
+
+
+
+  function getCardScrollAmount() {
+
+    const card =
+      track.querySelector(
+        '.categories-slider__card'
+      );
+
+
+    if (!card) {
+      return 300;
+    }
+
+
+    const styles =
+      window.getComputedStyle(track);
+
+
+    const gap =
+      parseFloat(
+        styles.columnGap ||
+        styles.gap ||
+        0
+      );
+
+
+    return card.offsetWidth + gap;
+
+  }
+
+
+
+  if (previous) {
+
+    previous.addEventListener(
+      'click',
+      function () {
+
+        track.scrollBy({
+          left:
+            -getCardScrollAmount(),
+
+          behavior:
+            'smooth'
+        });
+
+      }
+    );
+
+  }
+
+
+
+  if (next) {
+
+    next.addEventListener(
+      'click',
+      function () {
+
+        track.scrollBy({
+          left:
+            getCardScrollAmount(),
+
+          behavior:
+            'smooth'
+        });
+
+      }
+    );
+
+  }
+
+
+
+  function updateProgress() {
+
+    if (!progress) return;
+
+
+    const scrollWidth =
+      track.scrollWidth;
+
+    const clientWidth =
+      track.clientWidth;
+
+    const maxScroll =
+      scrollWidth -
+      clientWidth;
+
+
+    if (
+      scrollWidth <= 0 ||
+      clientWidth <= 0
+    ) {
+      return;
+    }
+
+
+    const visiblePercentage =
+      Math.min(
+        100,
+        Math.max(
+          12,
+          (clientWidth / scrollWidth) * 100
+        )
+      );
+
+
+    progress.style.width =
+      visiblePercentage + '%';
+
+
+    if (maxScroll <= 0) {
+
+      progress.style.left =
+        '0%';
+
+      return;
+    }
+
+
+    const scrollPercentage =
+      track.scrollLeft /
+      maxScroll;
+
+
+    const movement =
+      100 -
+      visiblePercentage;
+
+
+    progress.style.left =
+      (
+        scrollPercentage *
+        movement
+      ) + '%';
+
+  }
+
+
+  track.addEventListener(
+    'scroll',
+    updateProgress,
+    {
+      passive: true
+    }
+  );
+
+
+  window.addEventListener(
+    'resize',
+    updateProgress
+  );
+
+
+  updateProgress();
+
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Categories slider",
+  "max_blocks": 12,
+
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Categories"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Desktop heading size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile heading size",
+      "min": 22,
+      "max": 44,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "label": "Card title size",
+      "min": 14,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "card_ratio",
+      "label": "Card shape",
+      "default": "3 / 4",
+      "options": [
+        {
+          "value": "3 / 4",
+          "label": "Portrait"
+        },
+        {
+          "value": "4 / 5",
+          "label": "Tall"
+        },
+        {
+          "value": "1 / 1",
+          "label": "Square"
+        }
+      ]
+    },
+
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#111111"
+    },
+
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top spacing",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom spacing",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Category"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Categories slider",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "title": "Step-In"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Court"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Originals"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "City Sneaker"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Mallow Collection"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Retros"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

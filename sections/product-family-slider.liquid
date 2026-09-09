@@ -1,0 +1,1097 @@
+{% assign selected_collection = section.settings.collection %}
+
+<section
+  id="ProductFamilySlider-{{ section.id }}"
+  class="product-family-slider"
+>
+  <div class="product-family-slider__container">
+
+    {% if section.settings.heading != blank %}
+      <h2 class="product-family-slider__heading">
+        {{ section.settings.heading }}
+      </h2>
+    {% endif %}
+
+
+    {% if selected_collection != blank and selected_collection.products.size > 0 %}
+
+      <div class="product-family-slider__wrapper">
+
+        <div
+          class="product-family-slider__track"
+          data-family-track
+        >
+
+          {% for product in selected_collection.products limit: section.settings.products_to_show %}
+
+            {% assign current_variant = product.selected_or_first_available_variant %}
+            {% assign related_colors = product.metafields.custom.related_colors.value %}
+
+            <article class="product-family-slider__card">
+
+              <!-- PRODUCT MEDIA -->
+              <div class="product-family-slider__media">
+
+                {% if section.settings.badge_text != blank %}
+                  <span class="product-family-slider__badge">
+                    {{ section.settings.badge_text }}
+                  </span>
+                {% endif %}
+
+
+                <a
+                  href="{{ product.url }}"
+                  class="product-family-slider__image-link"
+                  aria-label="{{ product.title | escape }}"
+                >
+
+                  {% if product.featured_image != blank %}
+
+                    {{
+                      product.featured_image
+                      | image_url: width: 1000
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '300, 450, 600, 750, 900, 1000',
+                        sizes: '(min-width: 1200px) 23vw, (min-width: 750px) 42vw, 78vw',
+                        class: 'product-family-slider__image'
+                    }}
+
+                  {% else %}
+
+                    {{
+                      'product-1'
+                      | placeholder_svg_tag:
+                        'product-family-slider__placeholder'
+                    }}
+
+                  {% endif %}
+
+                </a>
+
+
+                {% if section.settings.show_water_icon %}
+                  <span
+                    class="product-family-slider__feature-icon"
+                    aria-hidden="true"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M12 2.8S6.5 9.2 6.5 14a5.5 5.5 0 0 0 11 0C17.5 9.2 12 2.8 12 2.8Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                      />
+                    </svg>
+                  </span>
+                {% endif %}
+
+              </div>
+
+
+              <!-- PRODUCT INFO -->
+              <div class="product-family-slider__info">
+
+                <a
+                  href="{{ product.url }}"
+                  class="product-family-slider__title"
+                >
+                  {{ product.title }}
+                </a>
+
+
+                {% if product.metafields.custom.color_name != blank %}
+
+                  <div class="product-family-slider__subtitle">
+                    {{ product.metafields.custom.color_name.value }}
+                  </div>
+
+                {% elsif section.settings.show_vendor and product.vendor != blank %}
+
+                  <div class="product-family-slider__subtitle">
+                    {{ product.vendor }}
+                  </div>
+
+                {% endif %}
+
+
+                <!-- PRICE -->
+                <div class="product-family-slider__price-row">
+
+                  <span
+                    class="product-family-slider__price{% if current_variant.compare_at_price > current_variant.price %} is-sale{% endif %}"
+                  >
+                    {{ current_variant.price | money }}
+                  </span>
+
+
+                  {% if current_variant.compare_at_price > current_variant.price %}
+
+                    <s class="product-family-slider__compare">
+                      {{ current_variant.compare_at_price | money }}
+                    </s>
+
+
+                    {% assign saving = current_variant.compare_at_price
+                      | minus: current_variant.price
+                    %}
+
+                    {% assign saving_percentage = saving
+                      | times: 100.0
+                      | divided_by: current_variant.compare_at_price
+                      | round
+                    %}
+
+
+                    <span class="product-family-slider__discount">
+                      -{{ saving_percentage }}%
+                    </span>
+
+                  {% endif %}
+
+                </div>
+
+
+                <!-- COLORS -->
+                {% if related_colors != blank %}
+
+                  <div class="product-family-slider__colors">
+
+                    {% for color_product in related_colors limit: 6 %}
+
+                      <a
+                        href="{{ color_product.url }}"
+                        class="product-family-slider__color{% if color_product.id == product.id %} is-active{% endif %}"
+                        title="{{ color_product.title | escape }}"
+                        aria-label="{{ color_product.title | escape }}"
+                      >
+
+                        {% if color_product.featured_image != blank %}
+
+                          {{
+                            color_product.featured_image
+                            | image_url: width: 80
+                            | image_tag:
+                              loading: 'lazy',
+                              class: 'product-family-slider__color-image'
+                          }}
+
+                        {% endif %}
+
+                      </a>
+
+                    {% endfor %}
+
+
+                    {% if related_colors.size > 6 %}
+
+                      <span class="product-family-slider__more">
+                        +{{ related_colors.size | minus: 6 }}
+                      </span>
+
+                    {% endif %}
+
+                  </div>
+
+                {% endif %}
+
+              </div>
+
+            </article>
+
+          {% endfor %}
+
+        </div>
+
+
+        <!-- CONTROLS -->
+        <div class="product-family-slider__controls">
+
+          <div class="product-family-slider__arrows">
+
+            <button
+              type="button"
+              class="product-family-slider__arrow"
+              data-family-prev
+              aria-label="Previous products"
+            >
+              ←
+            </button>
+
+            <button
+              type="button"
+              class="product-family-slider__arrow"
+              data-family-next
+              aria-label="Next products"
+            >
+              →
+            </button>
+
+          </div>
+
+
+          <div class="product-family-slider__progress">
+
+            <span
+              class="product-family-slider__progress-bar"
+              data-family-progress
+            ></span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+    {% else %}
+
+      <div class="product-family-slider__empty">
+        Select a collection in the section settings.
+      </div>
+
+    {% endif %}
+
+  </div>
+</section>
+
+
+<style>
+
+#ProductFamilySlider-{{ section.id }} {
+  width: 100%;
+
+  padding:
+    {{ section.settings.padding_top }}px
+    0
+    {{ section.settings.padding_bottom }}px;
+
+  overflow: hidden;
+
+  background:
+    {{ section.settings.background }};
+
+  color:
+    {{ section.settings.text_color }};
+}
+
+#ProductFamilySlider-{{ section.id }} * {
+  box-sizing: border-box;
+}
+
+
+/* CONTAINER */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__container {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 0 20px;
+}
+
+
+/* HEADING */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__heading {
+  margin: 0 0 28px;
+
+  font-size: 34px;
+
+  line-height: 1;
+
+  font-weight: 600;
+
+  letter-spacing: -.03em;
+}
+
+
+/* TRACK */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__track {
+  display: grid;
+
+  grid-auto-flow: column;
+
+  /*
+    Afërsisht si screenshot:
+    4 produkte + një pjesë e të pestit.
+  */
+  grid-auto-columns: 23.5%;
+
+  gap: 12px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+
+  scroll-snap-type: x mandatory;
+
+  overscroll-behavior-inline: contain;
+
+  scrollbar-width: none;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__track::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* CARD */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__card {
+  min-width: 0;
+
+  scroll-snap-align: start;
+}
+
+
+/* MEDIA */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__media {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  overflow: hidden;
+
+  background: #f7f7f7;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__image-link {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__image,
+#ProductFamilySlider-{{ section.id }} .product-family-slider__placeholder {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  transition: transform .3s ease;
+}
+
+#ProductFamilySlider-{{ section.id }}
+.product-family-slider__image-link:hover
+.product-family-slider__image {
+  transform: scale(1.025);
+}
+
+
+/* BADGE */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__badge {
+  position: absolute;
+
+  top: 10px;
+  left: 10px;
+
+  z-index: 3;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  min-height: 29px;
+
+  padding: 4px 11px;
+
+  background:
+    {{ section.settings.badge_background }};
+
+  color:
+    {{ section.settings.badge_color }};
+
+  font-size: 13px;
+
+  line-height: 1;
+
+  font-weight: 600;
+
+  pointer-events: none;
+}
+
+
+/* FEATURE ICON */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__feature-icon {
+  position: absolute;
+
+  z-index: 3;
+
+  left: 9px;
+  bottom: 14px;
+
+  width: 22px;
+  height: 22px;
+
+  color: #111;
+
+  pointer-events: none;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__feature-icon svg {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}
+
+
+/* INFO */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__info {
+  padding-top: 14px;
+}
+
+
+/* TITLE */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__title {
+  display: block;
+
+  margin: 0 0 3px;
+
+  color: inherit;
+
+  font-size: 15px;
+
+  line-height: 1.2;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__title:hover {
+  text-decoration: underline;
+}
+
+
+/* SUBTITLE */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__subtitle {
+  min-height: 19px;
+
+  margin-bottom: 7px;
+
+  color: #777;
+
+  font-size: 13px;
+
+  line-height: 1.3;
+}
+
+
+/* PRICE */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__price-row {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__price {
+  color: #111;
+
+  font-size: 14px;
+
+  line-height: 1.2;
+
+  font-weight: 600;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__price.is-sale {
+  color:
+    {{ section.settings.sale_color }};
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__compare {
+  color: #888;
+
+  font-size: 13px;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__discount {
+  display: inline-flex;
+
+  align-items: center;
+
+  min-height: 21px;
+
+  padding: 2px 5px;
+
+  border: 1px solid #cda96b;
+
+  color: #9f7c3e;
+
+  font-size: 11px;
+}
+
+
+/* COLORS */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__colors {
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  min-height: 25px;
+
+  margin-top: 10px;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__color {
+  display: block;
+
+  flex: 0 0 22px;
+
+  width: 22px;
+  height: 22px;
+
+  padding: 1px;
+
+  overflow: hidden;
+
+  border: 1px solid transparent;
+
+  border-radius: 50%;
+
+  background: #fff;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__color:hover,
+#ProductFamilySlider-{{ section.id }} .product-family-slider__color.is-active {
+  border-color: #111;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__color-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__more {
+  margin-left: 2px;
+
+  color: #aaa;
+
+  font-size: 11px;
+}
+
+
+/* CONTROLS */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__controls {
+  display: flex;
+
+  align-items: center;
+
+  gap: 28px;
+
+  margin-top: 18px;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__arrows {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__arrow {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #111;
+
+  font-size: 25px;
+
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__arrow:hover {
+  opacity: .55;
+}
+
+
+/* PROGRESS */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__progress {
+  position: relative;
+
+  width: 275px;
+
+  height: 2px;
+
+  overflow: hidden;
+
+  background: #ccc;
+}
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__progress-bar {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  display: block;
+
+  width: 25%;
+  height: 100%;
+
+  background: #111;
+}
+
+
+/* EMPTY */
+
+#ProductFamilySlider-{{ section.id }} .product-family-slider__empty {
+  padding: 50px;
+
+  background: #f7f7f7;
+
+  text-align: center;
+}
+
+
+/* TABLET */
+
+@media screen and (max-width: 1100px) {
+
+  #ProductFamilySlider-{{ section.id }} .product-family-slider__track {
+    grid-auto-columns: 42%;
+  }
+
+}
+
+
+/* MOBILE */
+
+@media screen and (max-width: 700px) {
+
+  #ProductFamilySlider-{{ section.id }} {
+    padding:
+      {{ section.settings.mobile_padding_top }}px
+      0
+      {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+
+  #ProductFamilySlider-{{ section.id }} .product-family-slider__container {
+    padding: 0 14px;
+  }
+
+
+  #ProductFamilySlider-{{ section.id }} .product-family-slider__heading {
+    margin-bottom: 20px;
+
+    font-size: 28px;
+  }
+
+
+  #ProductFamilySlider-{{ section.id }} .product-family-slider__track {
+    grid-auto-columns: 78%;
+
+    gap: 8px;
+  }
+
+
+  #ProductFamilySlider-{{ section.id }} .product-family-slider__badge {
+    top: 8px;
+    left: 8px;
+
+    min-height: 27px;
+
+    padding: 4px 9px;
+
+    font-size: 11px;
+  }
+
+
+  #ProductFamilySlider-{{ section.id }} .product-family-slider__controls {
+    gap: 14px;
+
+    margin-top: 14px;
+  }
+
+
+  #ProductFamilySlider-{{ section.id }} .product-family-slider__progress {
+    flex: 1;
+
+    width: auto;
+  }
+
+}
+
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const section =
+    document.getElementById(
+      'ProductFamilySlider-{{ section.id }}'
+    );
+
+  if (!section) return;
+
+
+  const track =
+    section.querySelector(
+      '[data-family-track]'
+    );
+
+  const previous =
+    section.querySelector(
+      '[data-family-prev]'
+    );
+
+  const next =
+    section.querySelector(
+      '[data-family-next]'
+    );
+
+  const progress =
+    section.querySelector(
+      '[data-family-progress]'
+    );
+
+
+  if (!track) return;
+
+
+  function getCardWidth() {
+
+    const card =
+      track.querySelector(
+        '.product-family-slider__card'
+      );
+
+    if (!card) {
+      return 300;
+    }
+
+
+    const style =
+      window.getComputedStyle(track);
+
+
+    const gap =
+      parseFloat(
+        style.columnGap ||
+        style.gap ||
+        0
+      );
+
+
+    return card.offsetWidth + gap;
+
+  }
+
+
+  if (previous) {
+
+    previous.addEventListener(
+      'click',
+      function () {
+
+        track.scrollBy({
+          left: -getCardWidth(),
+          behavior: 'smooth'
+        });
+
+      }
+    );
+
+  }
+
+
+  if (next) {
+
+    next.addEventListener(
+      'click',
+      function () {
+
+        track.scrollBy({
+          left: getCardWidth(),
+          behavior: 'smooth'
+        });
+
+      }
+    );
+
+  }
+
+
+  function updateProgress() {
+
+    if (!progress) return;
+
+
+    const scrollWidth =
+      track.scrollWidth;
+
+    const clientWidth =
+      track.clientWidth;
+
+    const maxScroll =
+      scrollWidth -
+      clientWidth;
+
+
+    if (
+      scrollWidth <= 0 ||
+      clientWidth <= 0
+    ) {
+      return;
+    }
+
+
+    const visiblePercentage =
+      Math.min(
+        100,
+        Math.max(
+          10,
+          (
+            clientWidth /
+            scrollWidth
+          ) *
+          100
+        )
+      );
+
+
+    progress.style.width =
+      visiblePercentage + '%';
+
+
+    if (maxScroll <= 0) {
+
+      progress.style.left =
+        '0%';
+
+      return;
+
+    }
+
+
+    const scrollPercentage =
+      track.scrollLeft /
+      maxScroll;
+
+
+    const availableMovement =
+      100 -
+      visiblePercentage;
+
+
+    progress.style.left =
+      (
+        scrollPercentage *
+        availableMovement
+      ) + '%';
+
+  }
+
+
+  track.addEventListener(
+    'scroll',
+    updateProgress,
+    {
+      passive: true
+    }
+  );
+
+
+  window.addEventListener(
+    'resize',
+    updateProgress
+  );
+
+
+  updateProgress();
+
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Product family slider",
+
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "default": 10
+    },
+
+    {
+      "type": "header",
+      "content": "Product badge"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "New"
+    },
+    {
+      "type": "color",
+      "id": "badge_background",
+      "label": "Badge background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_water_icon",
+      "label": "Show water icon",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "Product information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor when color name is unavailable",
+      "default": false
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "sale_color",
+      "label": "Sale price color",
+      "default": "#d71900"
+    },
+
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top spacing",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom spacing",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 45
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Product family slider"
+    }
+  ]
+}
+{% endschema %}

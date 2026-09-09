@@ -1,0 +1,1227 @@
+<section
+  id="CustomerReviews-{{ section.id }}"
+  class="customer-reviews"
+>
+  <div class="customer-reviews__container">
+
+    <!-- HEADER -->
+    <div class="customer-reviews__top">
+
+      <div class="customer-reviews__summary">
+
+        {% if section.settings.heading != blank %}
+          <h2 class="customer-reviews__heading">
+            {{ section.settings.heading }}
+          </h2>
+        {% endif %}
+
+        <div class="customer-reviews__rating-row">
+
+          <div
+            class="customer-reviews__stars"
+            aria-label="{{ section.settings.average_rating }} out of 5 stars"
+          >
+            {% assign rounded_rating = section.settings.average_rating | round %}
+
+            {% for i in (1..5) %}
+              <span
+                class="customer-reviews__star{% if i <= rounded_rating %} is-filled{% endif %}"
+              >
+                ★
+              </span>
+            {% endfor %}
+          </div>
+
+          <span class="customer-reviews__rating-number">
+            {{ section.settings.average_rating }}
+          </span>
+
+          <span class="customer-reviews__count">
+            ({{ section.settings.review_count }} reviews)
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ACTIONS -->
+      <div class="customer-reviews__actions">
+
+        <button
+          type="button"
+          class="customer-reviews__write"
+          data-write-review
+        >
+          {{ section.settings.write_button_text }}
+        </button>
+
+        <button
+          type="button"
+          class="customer-reviews__action-button"
+          data-filter-toggle
+          aria-label="Filter reviews"
+          title="Filter reviews"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M4 5h16l-6 7v5l-4 2v-7L4 5Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          class="customer-reviews__action-button"
+          data-sort-toggle
+          aria-label="Sort reviews"
+          title="Sort reviews"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 4v16M5 7l3-3 3 3M16 20V4M13 17l3 3 3-3"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- FILTER PANEL -->
+    <div
+      class="customer-reviews__filter-panel"
+      data-filter-panel
+      hidden
+    >
+
+      <button
+        type="button"
+        class="customer-reviews__filter is-active"
+        data-rating-filter="all"
+      >
+        All
+      </button>
+
+      {% for i in (5..1) %}
+        <button
+          type="button"
+          class="customer-reviews__filter"
+          data-rating-filter="{{ i }}"
+        >
+          {{ i }} ★
+        </button>
+      {% endfor %}
+
+    </div>
+
+
+    <!-- SORT PANEL -->
+    <div
+      class="customer-reviews__sort-panel"
+      data-sort-panel
+      hidden
+    >
+
+      <button
+        type="button"
+        data-sort="newest"
+      >
+        Newest
+      </button>
+
+      <button
+        type="button"
+        data-sort="highest"
+      >
+        Highest rating
+      </button>
+
+      <button
+        type="button"
+        data-sort="lowest"
+      >
+        Lowest rating
+      </button>
+
+    </div>
+
+
+    <!-- REVIEW FORM -->
+    <div
+      class="customer-reviews__form-wrapper"
+      data-review-form
+      hidden
+    >
+
+      <form
+        class="customer-reviews__form"
+        data-local-review-form
+      >
+
+        <div class="customer-reviews__form-head">
+
+          <h3>
+            Write a review
+          </h3>
+
+          <button
+            type="button"
+            class="customer-reviews__form-close"
+            data-close-review-form
+            aria-label="Close review form"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <label>
+          Name
+
+          <input
+            type="text"
+            name="name"
+            required
+          >
+        </label>
+
+
+        <label>
+          Rating
+
+          <select
+            name="rating"
+            required
+          >
+            <option value="5">5 stars</option>
+            <option value="4">4 stars</option>
+            <option value="3">3 stars</option>
+            <option value="2">2 stars</option>
+            <option value="1">1 star</option>
+          </select>
+        </label>
+
+
+        <label>
+          Review title
+
+          <input
+            type="text"
+            name="title"
+            required
+          >
+        </label>
+
+
+        <label>
+          Review
+
+          <textarea
+            name="body"
+            rows="5"
+            required
+          ></textarea>
+        </label>
+
+
+        <button
+          type="submit"
+          class="customer-reviews__submit"
+        >
+          Submit review
+        </button>
+
+        <div
+          class="customer-reviews__form-message"
+          data-form-message
+          aria-live="polite"
+        ></div>
+
+      </form>
+
+    </div>
+
+
+    <!-- REVIEWS -->
+    <div
+      class="customer-reviews__list"
+      data-review-list
+    >
+
+      {% for block in section.blocks %}
+
+        {% if block.type == 'review' %}
+
+          <article
+            class="customer-reviews__review"
+            data-review-card
+            data-rating="{{ block.settings.rating }}"
+            data-order="{{ forloop.index }}"
+            {{ block.shopify_attributes }}
+          >
+
+            <div class="customer-reviews__review-stars">
+
+              {% for i in (1..5) %}
+                <span
+                  class="{% if i <= block.settings.rating %}is-filled{% endif %}"
+                >
+                  ★
+                </span>
+              {% endfor %}
+
+            </div>
+
+
+            <div class="customer-reviews__review-author-row">
+
+              <strong class="customer-reviews__review-author">
+                {{ block.settings.author }}
+              </strong>
+
+              {% if block.settings.verified %}
+                <span class="customer-reviews__verified">
+                  Verified by shop
+                </span>
+              {% endif %}
+
+            </div>
+
+
+            {% if block.settings.title != blank %}
+              <h3 class="customer-reviews__review-title">
+                {{ block.settings.title }}
+              </h3>
+            {% endif %}
+
+
+            {% if block.settings.body != blank %}
+              <div class="customer-reviews__review-body">
+                {{ block.settings.body }}
+              </div>
+            {% endif %}
+
+
+            {% if block.settings.date != blank %}
+              <div class="customer-reviews__review-date">
+                {{ block.settings.date }}
+              </div>
+            {% endif %}
+
+          </article>
+
+        {% endif %}
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+</section>
+
+
+<style>
+
+#CustomerReviews-{{ section.id }} {
+  width: 100%;
+
+  padding: 55px 20px 80px;
+
+  background: {{ section.settings.background }};
+  color: {{ section.settings.text_color }};
+}
+
+#CustomerReviews-{{ section.id }} * {
+  box-sizing: border-box;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__container {
+  width: 100%;
+  max-width: 1040px;
+
+  margin: 0 auto;
+}
+
+
+/* TOP */
+
+#CustomerReviews-{{ section.id }} .customer-reviews__top {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) auto;
+
+  gap: 30px;
+
+  align-items: end;
+
+  margin-bottom: 28px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__heading {
+  margin: 0 0 10px;
+
+  font-size: 18px;
+
+  font-weight: 500;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__rating-row {
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__stars {
+  display: flex;
+
+  gap: 1px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__star {
+  color: #d0d0d0;
+
+  font-size: 14px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__star.is-filled {
+  color: #000;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__rating-number,
+#CustomerReviews-{{ section.id }} .customer-reviews__count {
+  font-size: 11px;
+}
+
+
+/* ACTIONS */
+
+#CustomerReviews-{{ section.id }} .customer-reviews__actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__write {
+  min-width: 215px;
+
+  height: 38px;
+
+  padding: 0 18px;
+
+  border: 1px solid #000;
+
+  background: #000;
+
+  color: #fff;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__write:hover {
+  opacity: .88;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__action-button {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #222;
+
+  background: #fff;
+
+  color: #111;
+
+  cursor: pointer;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__action-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+
+/* PANELS */
+
+#CustomerReviews-{{ section.id }} .customer-reviews__filter-panel,
+#CustomerReviews-{{ section.id }} .customer-reviews__sort-panel {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  padding: 15px 0;
+
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+
+  margin-bottom: 20px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__filter,
+#CustomerReviews-{{ section.id }} .customer-reviews__sort-panel button {
+  padding: 8px 13px;
+
+  border: 1px solid #ddd;
+
+  background: #fff;
+
+  color: #111;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__filter.is-active {
+  border-color: #111;
+
+  background: #111;
+
+  color: #fff;
+}
+
+
+/* LIST */
+
+#CustomerReviews-{{ section.id }} .customer-reviews__list {
+  border-top: 1px solid #ededed;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review {
+  padding: 30px 0;
+
+  border-bottom: 1px solid #ededed;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-stars {
+  display: flex;
+
+  gap: 1px;
+
+  margin-bottom: 10px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-stars span {
+  color: #ccc;
+
+  font-size: 18px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-stars .is-filled {
+  color: #000;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-author-row {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 10px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-author {
+  font-size: 14px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__verified {
+  display: inline-block;
+
+  padding: 2px 5px;
+
+  background: #eee;
+
+  font-size: 8px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-title {
+  margin: 0 0 8px;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-body {
+  max-width: 760px;
+
+  font-size: 14px;
+
+  line-height: 1.55;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-body p {
+  margin-top: 0;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__review-date {
+  margin-top: 12px;
+
+  color: #888;
+
+  font-size: 10px;
+}
+
+
+/* FORM */
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form-wrapper {
+  margin-bottom: 30px;
+
+  padding: 25px;
+
+  border: 1px solid #ddd;
+
+  background: #fafafa;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form {
+  display: grid;
+
+  gap: 16px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form-head {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form-head h3 {
+  margin: 0;
+
+  font-size: 18px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form-close {
+  width: 34px;
+  height: 34px;
+
+  border: 0;
+
+  background: transparent;
+
+  font-size: 24px;
+
+  cursor: pointer;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form label {
+  display: grid;
+
+  gap: 7px;
+
+  font-size: 12px;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form input,
+#CustomerReviews-{{ section.id }} .customer-reviews__form select,
+#CustomerReviews-{{ section.id }} .customer-reviews__form textarea {
+  width: 100%;
+
+  padding: 11px 12px;
+
+  border: 1px solid #ccc;
+
+  background: #fff;
+
+  color: #111;
+
+  font: inherit;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__submit {
+  min-height: 45px;
+
+  border: 0;
+
+  background: #000;
+
+  color: #fff;
+
+  cursor: pointer;
+}
+
+
+#CustomerReviews-{{ section.id }} .customer-reviews__form-message {
+  min-height: 18px;
+
+  font-size: 12px;
+}
+
+
+/* MOBILE */
+
+@media screen and (max-width: 700px) {
+
+  #CustomerReviews-{{ section.id }} {
+    padding: 40px 14px 55px;
+  }
+
+  #CustomerReviews-{{ section.id }} .customer-reviews__top {
+    grid-template-columns: 1fr;
+
+    align-items: start;
+
+    gap: 18px;
+  }
+
+  #CustomerReviews-{{ section.id }} .customer-reviews__actions {
+    width: 100%;
+  }
+
+  #CustomerReviews-{{ section.id }} .customer-reviews__write {
+    flex: 1;
+
+    min-width: 0;
+  }
+
+}
+
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const section =
+    document.getElementById(
+      'CustomerReviews-{{ section.id }}'
+    );
+
+  if (!section) return;
+
+
+  const filterToggle =
+    section.querySelector(
+      '[data-filter-toggle]'
+    );
+
+  const sortToggle =
+    section.querySelector(
+      '[data-sort-toggle]'
+    );
+
+  const filterPanel =
+    section.querySelector(
+      '[data-filter-panel]'
+    );
+
+  const sortPanel =
+    section.querySelector(
+      '[data-sort-panel]'
+    );
+
+  const writeReview =
+    section.querySelector(
+      '[data-write-review]'
+    );
+
+  const reviewFormWrapper =
+    section.querySelector(
+      '[data-review-form]'
+    );
+
+  const closeReviewForm =
+    section.querySelector(
+      '[data-close-review-form]'
+    );
+
+  const reviewList =
+    section.querySelector(
+      '[data-review-list]'
+    );
+
+
+  /* FILTER PANEL */
+
+  if (
+    filterToggle &&
+    filterPanel
+  ) {
+
+    filterToggle.addEventListener(
+      'click',
+      function () {
+
+        filterPanel.hidden =
+          !filterPanel.hidden;
+
+        if (sortPanel) {
+          sortPanel.hidden = true;
+        }
+
+      }
+    );
+
+  }
+
+
+  /* SORT PANEL */
+
+  if (
+    sortToggle &&
+    sortPanel
+  ) {
+
+    sortToggle.addEventListener(
+      'click',
+      function () {
+
+        sortPanel.hidden =
+          !sortPanel.hidden;
+
+        if (filterPanel) {
+          filterPanel.hidden = true;
+        }
+
+      }
+    );
+
+  }
+
+
+  /* RATING FILTER */
+
+  const filterButtons =
+    section.querySelectorAll(
+      '[data-rating-filter]'
+    );
+
+
+  filterButtons.forEach(
+    function (button) {
+
+      button.addEventListener(
+        'click',
+        function () {
+
+          filterButtons.forEach(
+            function (other) {
+              other.classList.remove(
+                'is-active'
+              );
+            }
+          );
+
+          this.classList.add(
+            'is-active'
+          );
+
+
+          const rating =
+            this.dataset.ratingFilter;
+
+
+          section
+            .querySelectorAll(
+              '[data-review-card]'
+            )
+            .forEach(
+              function (review) {
+
+                if (
+                  rating === 'all' ||
+                  review.dataset.rating === rating
+                ) {
+
+                  review.hidden =
+                    false;
+
+                } else {
+
+                  review.hidden =
+                    true;
+
+                }
+
+              }
+            );
+
+        }
+      );
+
+    }
+  );
+
+
+  /* SORT */
+
+  const sortButtons =
+    section.querySelectorAll(
+      '[data-sort]'
+    );
+
+
+  sortButtons.forEach(
+    function (button) {
+
+      button.addEventListener(
+        'click',
+        function () {
+
+          if (!reviewList) return;
+
+
+          const type =
+            this.dataset.sort;
+
+
+          const reviews =
+            Array.from(
+              reviewList.querySelectorAll(
+                '[data-review-card]'
+              )
+            );
+
+
+          reviews.sort(
+            function (a, b) {
+
+              const aRating =
+                Number(a.dataset.rating);
+
+              const bRating =
+                Number(b.dataset.rating);
+
+              const aOrder =
+                Number(a.dataset.order);
+
+              const bOrder =
+                Number(b.dataset.order);
+
+
+              if (type === 'highest') {
+                return bRating - aRating;
+              }
+
+              if (type === 'lowest') {
+                return aRating - bRating;
+              }
+
+              return bOrder - aOrder;
+
+            }
+          );
+
+
+          reviews.forEach(
+            function (review) {
+
+              reviewList.appendChild(
+                review
+              );
+
+            }
+          );
+
+
+          if (sortPanel) {
+            sortPanel.hidden =
+              true;
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  /* WRITE REVIEW */
+
+  if (
+    writeReview &&
+    reviewFormWrapper
+  ) {
+
+    writeReview.addEventListener(
+      'click',
+      function () {
+
+        reviewFormWrapper.hidden =
+          false;
+
+        reviewFormWrapper.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+
+      }
+    );
+
+  }
+
+
+  if (
+    closeReviewForm &&
+    reviewFormWrapper
+  ) {
+
+    closeReviewForm.addEventListener(
+      'click',
+      function () {
+
+        reviewFormWrapper.hidden =
+          true;
+
+      }
+    );
+
+  }
+
+
+  /* LOCAL REVIEW FORM */
+
+  const localForm =
+    section.querySelector(
+      '[data-local-review-form]'
+    );
+
+  const formMessage =
+    section.querySelector(
+      '[data-form-message]'
+    );
+
+
+  if (localForm) {
+
+    localForm.addEventListener(
+      'submit',
+      function (event) {
+
+        event.preventDefault();
+
+
+        if (formMessage) {
+
+          formMessage.textContent =
+            'Review submitted for preview.';
+
+        }
+
+
+        localForm.reset();
+
+
+        /*
+          Important:
+          This example does NOT save reviews
+          permanently to Shopify.
+
+          For permanent customer reviews,
+          connect this form to:
+          - a review app
+          - an app proxy
+          - your own backend
+        */
+
+      }
+    );
+
+  }
+
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Customer reviews",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "range",
+      "id": "average_rating",
+      "label": "Average rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.1,
+      "default": 4.7
+    },
+    {
+      "type": "number",
+      "id": "review_count",
+      "label": "Review count",
+      "default": 1336
+    },
+    {
+      "type": "text",
+      "id": "write_button_text",
+      "label": "Write review button",
+      "default": "Write a review"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#111111"
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Customer name",
+          "default": "Diana"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified customer",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Review title",
+          "default": "Very comfortable"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Review text",
+          "default": "<p>Super comfortable and lightweight. I would definitely recommend them.</p>"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Date",
+          "default": "September 2026"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Customer reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "author": "Diana",
+            "rating": 5,
+            "verified": true,
+            "title": "Very comfortable",
+            "body": "<p>Very soft and comfortable. Great for everyday wear.</p>"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author": "Anna",
+            "rating": 5,
+            "verified": true,
+            "title": "Love them",
+            "body": "<p>Lightweight and very comfortable. The fit is perfect.</p>"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author": "Mia",
+            "rating": 4,
+            "verified": true,
+            "title": "Good quality",
+            "body": "<p>Comfortable and easy to wear. I am happy with the purchase.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
