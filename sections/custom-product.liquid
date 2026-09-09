@@ -1073,32 +1073,26 @@
     if (!section) return;
 
     /* ============================================================
-     VARIANTS
-  ============================================================ */
+       VARIANTS
+    ============================================================ */
 
     const variantJson = section.querySelector('[data-product-variants]');
+
+    if (!variantJson) return;
 
     const variants = JSON.parse(variantJson.textContent);
 
     const variantInput = section.querySelector('[data-variant-input]');
-
     const price = section.querySelector('[data-product-price]');
-
     const comparePrice = section.querySelector('[data-compare-price]');
-
     const discount = section.querySelector('[data-discount]');
-
     const stock = section.querySelector('[data-stock-text]');
-
     const addButton = section.querySelector('[data-add-to-cart]');
-
     const addText = section.querySelector('[data-add-text]');
-
     const addStock = section.querySelector('[data-add-stock]');
-
     const selectedColorText = section.querySelector('[data-selected-color]');
-
     const selectedSizeText = section.querySelector('[data-selected-size]');
+    const message = section.querySelector('[data-product-message]');
 
     const currency =
       window.Shopify && Shopify.currency && Shopify.currency.active
@@ -1106,15 +1100,19 @@
         : '{{ cart.currency.iso_code | default: shop.currency }}';
 
     function formatMoney(cents) {
-      return new Intl.NumberFormat(document.documentElement.lang || 'en', {
-        style: 'currency',
-        currency: currency,
-      }).format(Number(cents) / 100);
+      try {
+        return new Intl.NumberFormat(document.documentElement.lang || 'en', {
+          style: 'currency',
+          currency: currency,
+        }).format(Number(cents) / 100);
+      } catch (error) {
+        return (Number(cents) / 100).toFixed(2);
+      }
     }
 
     /* ============================================================
-     CURRENT OPTIONS
-  ============================================================ */
+       CURRENT OPTIONS
+    ============================================================ */
 
     const selectedOptions = {};
 
@@ -1123,8 +1121,8 @@
     });
 
     /* ============================================================
-     FIND VARIANT
-  ============================================================ */
+       FIND VARIANT
+    ============================================================ */
 
     function findVariant() {
       return variants.find(function (variant) {
@@ -1145,83 +1143,112 @@
     }
 
     /* ============================================================
-     UPDATE VARIANT
-  ============================================================ */
+       UPDATE VARIANT
+    ============================================================ */
 
     function updateVariant() {
       const variant = findVariant();
 
       if (!variant) {
-        variantInput.value = '';
+        if (variantInput) {
+          variantInput.value = '';
+        }
 
-        addButton.disabled = true;
+        if (addButton) {
+          addButton.disabled = true;
+        }
 
-        addText.textContent = 'UNAVAILABLE';
+        if (addText) {
+          addText.textContent = 'UNAVAILABLE';
+        }
+
+        if (addStock) {
+          addStock.innerHTML = '';
+        }
 
         return;
       }
 
-      variantInput.value = variant.id;
+      if (variantInput) {
+        variantInput.value = variant.id;
+      }
 
-      price.textContent = formatMoney(variant.price);
+      if (price) {
+        price.textContent = formatMoney(variant.price);
+      }
 
       const normalPrice = Number(variant.price || 0);
-
       const compare = Number(variant.compare_at_price || 0);
 
-      if (compare > normalPrice) {
-        comparePrice.textContent = formatMoney(compare);
+      if (comparePrice) {
+        if (compare > normalPrice) {
+          comparePrice.textContent = formatMoney(compare);
+          comparePrice.classList.remove('is-hidden');
+        } else {
+          comparePrice.textContent = '';
+          comparePrice.classList.add('is-hidden');
+        }
+      }
 
-        comparePrice.classList.remove('is-hidden');
+      if (discount) {
+        if (compare > normalPrice) {
+          const percentage = Math.round(((compare - normalPrice) / compare) * 100);
 
-        const percentage = Math.round(((compare - normalPrice) / compare) * 100);
-
-        discount.textContent = '-' + percentage + '%';
-
-        discount.classList.remove('is-hidden');
-      } else {
-        comparePrice.textContent = '';
-
-        comparePrice.classList.add('is-hidden');
-
-        discount.textContent = '';
-
-        discount.classList.add('is-hidden');
+          discount.textContent = '-' + percentage + '%';
+          discount.classList.remove('is-hidden');
+        } else {
+          discount.textContent = '';
+          discount.classList.add('is-hidden');
+        }
       }
 
       if (variant.available) {
-        stock.textContent = 'In stock';
+        if (stock) {
+          stock.textContent = 'In stock';
+        }
 
-        addButton.disabled = false;
+        if (addButton) {
+          addButton.disabled = false;
+        }
 
-        addText.textContent = 'ADD TO CART';
+        if (addText) {
+          addText.textContent = 'ADD TO CART';
+        }
 
-        addStock.innerHTML = '<span class="custom-product__green-dot"></span> IN STOCK';
+        if (addStock) {
+          addStock.innerHTML = '<span class="custom-product__green-dot"></span> IN STOCK';
+        }
       } else {
-        stock.textContent = 'Sold out';
+        if (stock) {
+          stock.textContent = 'Sold out';
+        }
 
-        addButton.disabled = true;
+        if (addButton) {
+          addButton.disabled = true;
+        }
 
-        addText.textContent = 'SOLD OUT';
+        if (addText) {
+          addText.textContent = 'SOLD OUT';
+        }
 
-        addStock.innerHTML = '';
+        if (addStock) {
+          addStock.innerHTML = '';
+        }
       }
     }
 
     /* ============================================================
-     GALLERY
-  ============================================================ */
+       GALLERY
+    ============================================================ */
 
     const mediaItems = Array.from(section.querySelectorAll('[data-media-item]'));
 
     const thumbnails = Array.from(section.querySelectorAll('[data-thumbnail]'));
 
     const previous = section.querySelector('[data-prev-media]');
-
     const next = section.querySelector('[data-next-media]');
 
     let visibleMedia = [];
-
     let currentMediaIndex = 0;
 
     function showMedia(index) {
@@ -1247,12 +1274,18 @@
 
       const activeItem = visibleMedia[index];
 
-      if (activeItem) {
-        activeItem.item.classList.add('is-active');
+      if (!activeItem) return;
 
-        if (activeItem.thumbnail) {
-          activeItem.thumbnail.classList.add('is-active');
-        }
+      activeItem.item.classList.add('is-active');
+
+      if (activeItem.thumbnail) {
+        activeItem.thumbnail.classList.add('is-active');
+
+        activeItem.thumbnail.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest',
+        });
       }
     }
 
@@ -1263,55 +1296,48 @@
 
       visibleMedia = [];
 
-      mediaItems.forEach(function (item) {
+      mediaItems.forEach(function (item, index) {
         const itemColor = (item.dataset.color || '').toLowerCase().trim();
 
         const matches = itemColor === normalized;
 
+        item.classList.remove('is-active');
+
         item.style.display = matches ? '' : 'none';
 
-        if (matches) {
-          const index = mediaItems.indexOf(item);
+        const thumbnail = thumbnails[index];
 
+        if (thumbnail) {
+          thumbnail.classList.remove('is-active');
+
+          const thumbnailColor = (thumbnail.dataset.color || '').toLowerCase().trim();
+
+          thumbnail.style.display = thumbnailColor === normalized ? '' : 'none';
+        }
+
+        if (matches) {
           visibleMedia.push({
             item: item,
-
-            thumbnail: thumbnails[index],
+            thumbnail: thumbnail || null,
           });
         }
       });
 
-      thumbnails.forEach(function (thumbnail) {
-        const thumbnailColor = (thumbnail.dataset.color || '').toLowerCase().trim();
-
-        thumbnail.style.display = thumbnailColor === normalized ? '' : 'none';
-      });
-
       /*
-      Nëse nuk ka ALT që përputhet,
-      mos e lë gallery bosh.
-    */
+        Nëse ALT nuk përputhet,
+        NUK i shfaqim krejt fotot e ngjyrave tjera.
+      */
 
       if (!visibleMedia.length) {
-        visibleMedia = mediaItems.map(function (item, index) {
-          item.style.display = '';
+        console.warn('No gallery images found for color:', color);
 
-          if (thumbnails[index]) {
-            thumbnails[index].style.display = '';
-          }
-
-          return {
-            item: item,
-
-            thumbnail: thumbnails[index],
-          };
-        });
+        return;
       }
 
       showMedia(0);
     }
 
-    thumbnails.forEach(function (thumbnail, index) {
+    thumbnails.forEach(function (thumbnail) {
       thumbnail.addEventListener('click', function () {
         const visibleIndex = visibleMedia.findIndex(function (media) {
           return media.thumbnail === thumbnail;
@@ -1336,8 +1362,8 @@
     }
 
     /* ============================================================
-     OPTION BUTTONS
-  ============================================================ */
+       OPTION BUTTONS
+    ============================================================ */
 
     const optionButtons = section.querySelectorAll('[data-option-button]');
 
@@ -1355,6 +1381,10 @@
 
         this.classList.add('is-active');
 
+        /*
+              COLOR
+            */
+
         if (this.hasAttribute('data-color')) {
           if (selectedColorText) {
             selectedColorText.textContent = value;
@@ -1363,21 +1393,29 @@
           updateGallery(value);
         }
 
+        /*
+              SIZE
+            */
+
         if (this.hasAttribute('data-size-button')) {
           if (selectedSizeText) {
             selectedSizeText.textContent = value;
           }
         }
 
-        updateVariant();
+        if (message) {
+          message.textContent = '';
+          message.className = 'custom-product__message';
+        }
 
+        updateVariant();
         updateSizeAvailability();
       });
     });
 
     /* ============================================================
-     SIZE AVAILABILITY
-  ============================================================ */
+       SIZE AVAILABILITY
+    ============================================================ */
 
     function updateSizeAvailability() {
       const sizeButtons = section.querySelectorAll('[data-size-button]');
@@ -1411,8 +1449,8 @@
     }
 
     /* ============================================================
-     QUANTITY
-  ============================================================ */
+       QUANTITY
+    ============================================================ */
 
     const quantityInput = section.querySelector('[data-quantity-input]');
 
@@ -1425,112 +1463,286 @@
     let quantity = 1;
 
     function updateQuantity() {
-      quantityInput.value = quantity;
+      if (quantityInput) {
+        quantityInput.value = quantity;
+      }
 
-      quantityValue.textContent = quantity;
+      if (quantityValue) {
+        quantityValue.textContent = quantity;
+      }
     }
 
-    quantityPlus.addEventListener('click', function () {
-      quantity++;
-
-      updateQuantity();
-    });
-
-    quantityMinus.addEventListener('click', function () {
-      if (quantity > 1) {
-        quantity--;
+    if (quantityPlus) {
+      quantityPlus.addEventListener('click', function () {
+        quantity++;
 
         updateQuantity();
-      }
-    });
+      });
+    }
+
+    if (quantityMinus) {
+      quantityMinus.addEventListener('click', function () {
+        if (quantity > 1) {
+          quantity--;
+
+          updateQuantity();
+        }
+      });
+    }
 
     /* ============================================================
-     ADD TO CART AJAX
-  ============================================================ */
+       UPDATE HEADER CART COUNT
+    ============================================================ */
 
-    const form = section.querySelector('.custom-product__form');
+    function updateCartCount(cart) {
+      if (!cart) return;
 
-    const message = section.querySelector('[data-product-message]');
+      const cartCountElements = document.querySelectorAll(
+        [
+          '[data-cart-count]',
+          '.cart-count',
+          '#CartCount',
+          '.cart-count-bubble span',
+          '.cart-count-bubble',
+          '[data-cart-count-bubble]',
+        ].join(',')
+      );
 
-    form.addEventListener('submit', async function (event) {
-      event.preventDefault();
+      cartCountElements.forEach(function (element) {
+        /*
+            Nëse .cart-count-bubble ka një span brenda,
+            ndryshojmë vetëm span-in.
+          */
 
-      const variantId = Number(variantInput.value);
+        const innerSpan = element.querySelector && element.querySelector('span');
 
-      if (!variantId) {
-        message.textContent = 'Please select an available variant.';
+        if (innerSpan && element.classList.contains('cart-count-bubble')) {
+          innerSpan.textContent = cart.item_count;
 
-        message.className = 'custom-product__message is-error';
+          return;
+        }
+
+        element.textContent = cart.item_count;
+      });
+    }
+
+    /* ============================================================
+       OPEN CART DRAWER
+    ============================================================ */
+
+    function openCartDrawer() {
+      const cartDrawer = document.querySelector(['cart-drawer', '.cart-drawer', '[data-cart-drawer]'].join(','));
+
+      if (!cartDrawer) {
+        return;
+      }
+
+      /*
+        Shopify custom element
+      */
+
+      if (typeof cartDrawer.open === 'function') {
+        cartDrawer.open();
 
         return;
       }
 
-      addButton.disabled = true;
+      /*
+        Fallback për themes të tjera
+      */
 
-      addText.textContent = 'ADDING...';
+      cartDrawer.classList.add('active');
 
-      try {
-        const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
-          method: 'POST',
+      cartDrawer.classList.add('is-open');
 
-          headers: {
-            'Content-Type': 'application/json',
+      cartDrawer.removeAttribute('hidden');
 
-            Accept: 'application/json',
-          },
-
-          body: JSON.stringify({
-            items: [
-              {
-                id: variantId,
-
-                quantity: quantity,
-              },
-            ],
-          }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.description || data.message || 'Could not add product');
-        }
-
-        addText.textContent = 'ADDED ✓';
-
-        message.textContent = 'Added to cart';
-
-        message.className = 'custom-product__message is-success';
-
-        setTimeout(function () {
-          updateVariant();
-        }, 1200);
-      } catch (error) {
-        message.textContent = error.message;
-
-        message.className = 'custom-product__message is-error';
-
-        updateVariant();
-      }
-    });
+      cartDrawer.setAttribute('aria-hidden', 'false');
+    }
 
     /* ============================================================
-     INITIAL STATE
-  ============================================================ */
+       CART EVENTS
+    ============================================================ */
+
+    function dispatchCartEvents(cart) {
+      document.dispatchEvent(
+        new CustomEvent('cart:updated', {
+          detail: {
+            cart: cart,
+          },
+        })
+      );
+
+      document.dispatchEvent(
+        new CustomEvent('cart:refresh', {
+          detail: {
+            cart: cart,
+          },
+        })
+      );
+    }
+
+    /* ============================================================
+       ADD TO CART AJAX
+    ============================================================ */
+
+    const form = section.querySelector('.custom-product__form');
+
+    if (form) {
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const variantId = Number(variantInput.value);
+
+        if (!variantId) {
+          if (message) {
+            message.textContent = 'Please select an available variant.';
+
+            message.className = 'custom-product__message is-error';
+          }
+
+          return;
+        }
+
+        /*
+            CLEAR OLD MESSAGE
+          */
+
+        if (message) {
+          message.textContent = '';
+
+          message.className = 'custom-product__message';
+        }
+
+        /*
+            BUTTON LOADING
+          */
+
+        addButton.disabled = true;
+
+        addText.textContent = 'ADDING...';
+
+        try {
+          /*
+              ADD PRODUCT
+            */
+
+          const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+            method: 'POST',
+
+            headers: {
+              'Content-Type': 'application/json',
+
+              Accept: 'application/json',
+            },
+
+            body: JSON.stringify({
+              items: [
+                {
+                  id: variantId,
+
+                  quantity: quantity,
+                },
+              ],
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.description || data.message || 'Could not add product');
+          }
+
+          /*
+              BUTTON SUCCESS
+            */
+
+          addText.textContent = 'ADDED ✓';
+
+          /*
+              IMPORTANT:
+              NUK E SHFAQIM MË
+              "Added to cart" POSHTË.
+            */
+
+          if (message) {
+            message.textContent = '';
+
+            message.className = 'custom-product__message';
+          }
+
+          /*
+              GET CURRENT CART
+            */
+
+          const cartResponse = await fetch(window.Shopify.routes.root + 'cart.js', {
+            method: 'GET',
+
+            headers: {
+              Accept: 'application/json',
+            },
+          });
+
+          if (!cartResponse.ok) {
+            throw new Error('Could not refresh cart');
+          }
+
+          const cart = await cartResponse.json();
+
+          /*
+              UPDATE CART COUNT
+            */
+
+          updateCartCount(cart);
+
+          /*
+              TRIGGER EVENTS FOR THEME
+            */
+
+          dispatchCartEvents(cart);
+
+          /*
+              OPEN CART DRAWER
+            */
+
+          openCartDrawer();
+
+          /*
+              RETURN BUTTON
+            */
+
+          setTimeout(function () {
+            updateVariant();
+          }, 1200);
+        } catch (error) {
+          /*
+              Vetëm error shfaqet poshtë.
+            */
+
+          if (message) {
+            message.textContent = error.message;
+
+            message.className = 'custom-product__message is-error';
+          }
+
+          updateVariant();
+        }
+      });
+    }
+
+    /* ============================================================
+       INITIAL STATE
+    ============================================================ */
 
     const initialColor = section.querySelector('[data-color].is-active');
 
     if (initialColor) {
       updateGallery(initialColor.dataset.optionValue);
     } else {
-      /*
-      fallback
-    */
-
       visibleMedia = mediaItems.map(function (item, index) {
         return {
           item: item,
-          thumbnail: thumbnails[index],
+          thumbnail: thumbnails[index] || null,
         };
       });
 
@@ -1538,11 +1750,10 @@
     }
 
     updateVariant();
-
     updateSizeAvailability();
+    updateQuantity();
   });
 </script>
-
 {% schema %}
 {
   "name": "Custom product",
