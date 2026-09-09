@@ -2,7 +2,6 @@
 
 {% if selected_product != blank %}
   {% assign current_variant = selected_product.selected_or_first_available_variant %}
-  {% assign related_colors = selected_product.metafields.custom.related_colors.value %}
 {% endif %}
 
 <section
@@ -16,8 +15,9 @@
     <div class="custom-product__container">
 
       <!-- =====================================================
-           LEFT SIDE - MEDIA
+           LEFT - PRODUCT GALLERY
       ====================================================== -->
+
       <div class="custom-product__media">
 
         <div
@@ -27,61 +27,36 @@
 
           {% for media in selected_product.media %}
 
-            <div
-              class="custom-product__media-item{% if forloop.first %} is-active{% endif %}"
-              data-media-item
-              data-media-index="{{ forloop.index0 }}"
-            >
+            {% if media.media_type == 'image' %}
 
-              {% case media.media_type %}
+              <div
+                class="custom-product__media-item"
+                data-media-item
+                data-color="{{ media.alt | downcase | strip | escape }}"
+              >
 
-                {% when 'image' %}
+                {{
+                  media
+                  | image_url: width: 1600
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '600, 900, 1200, 1600',
+                    sizes: '(min-width: 990px) 65vw, 100vw',
+                    class: 'custom-product__image',
+                    alt: media.alt
+                }}
 
-                  {{
-                    media
-                    | image_url: width: 1600
-                    | image_tag:
-                      loading: 'eager',
-                      widths: '600, 900, 1200, 1600',
-                      sizes: '(min-width: 990px) 65vw, 100vw',
-                      class: 'custom-product__image'
-                  }}
+              </div>
 
-                {% when 'video' %}
-
-                  {{
-                    media
-                    | video_tag:
-                      controls: true,
-                      class: 'custom-product__video'
-                  }}
-
-                {% when 'external_video' %}
-
-                  {{
-                    media
-                    | external_video_tag:
-                      class: 'custom-product__external-video'
-                  }}
-
-                {% when 'model' %}
-
-                  {{
-                    media
-                    | model_viewer_tag:
-                      class: 'custom-product__model'
-                  }}
-
-              {% endcase %}
-
-            </div>
+            {% endif %}
 
           {% endfor %}
 
         </div>
 
 
-        <!-- THUMBNAILS + ARROWS -->
+        <!-- THUMBNAILS -->
+
         <div class="custom-product__media-bottom">
 
           <div
@@ -91,63 +66,56 @@
 
             {% for media in selected_product.media %}
 
-              <button
-                type="button"
-                class="custom-product__thumbnail{% if forloop.first %} is-active{% endif %}"
-                data-thumbnail-index="{{ forloop.index0 }}"
-                aria-label="Media {{ forloop.index }}"
-              >
+              {% if media.media_type == 'image' %}
 
-                {% if media.preview_image %}
+                <button
+                  type="button"
+                  class="custom-product__thumbnail"
+                  data-thumbnail
+                  data-color="{{ media.alt | downcase | strip | escape }}"
+                  data-media-id="{{ media.id }}"
+                  aria-label="View image {{ forloop.index }}"
+                >
 
                   {{
                     media.preview_image
                     | image_url: width: 150
                     | image_tag:
                       loading: 'lazy',
-                      class: 'custom-product__thumbnail-image'
+                      class: 'custom-product__thumbnail-image',
+                      alt: ''
                   }}
 
-                {% endif %}
+                </button>
 
-                {% if media.media_type == 'video' or media.media_type == 'external_video' %}
-                  <span class="custom-product__play">
-                    ▶
-                  </span>
-                {% endif %}
-
-              </button>
+              {% endif %}
 
             {% endfor %}
 
           </div>
 
 
-          {% if selected_product.media.size > 1 %}
+          <div class="custom-product__arrows">
 
-            <div class="custom-product__arrows">
+            <button
+              type="button"
+              class="custom-product__arrow"
+              data-prev-media
+              aria-label="Previous image"
+            >
+              ←
+            </button>
 
-              <button
-                type="button"
-                class="custom-product__arrow"
-                data-prev-media
-                aria-label="Previous media"
-              >
-                ←
-              </button>
+            <button
+              type="button"
+              class="custom-product__arrow"
+              data-next-media
+              aria-label="Next image"
+            >
+              →
+            </button>
 
-              <button
-                type="button"
-                class="custom-product__arrow"
-                data-next-media
-                aria-label="Next media"
-              >
-                →
-              </button>
-
-            </div>
-
-          {% endif %}
+          </div>
 
         </div>
 
@@ -155,21 +123,20 @@
 
 
       <!-- =====================================================
-           RIGHT SIDE
+           RIGHT - PRODUCT INFO
       ====================================================== -->
+
       <div class="custom-product__info">
 
-
         <!-- TITLE -->
-        <h2
-          class="custom-product__title"
-          data-product-title
-        >
+
+        <h1 class="custom-product__title">
           {{ selected_product.title }}
-        </h2>
+        </h1>
 
 
         <!-- PRICE -->
+
         <div class="custom-product__price-row">
 
           <span
@@ -181,52 +148,53 @@
 
 
           <s
-            class="custom-product__compare-price{% unless current_variant.compare_at_price > current_variant.price %} is-hidden{% endunless %}"
+            class="custom-product__compare-price
+            {% unless current_variant.compare_at_price > current_variant.price %}
+              is-hidden
+            {% endunless %}
+            "
             data-compare-price
           >
+
             {% if current_variant.compare_at_price > current_variant.price %}
               {{ current_variant.compare_at_price | money }}
             {% endif %}
+
           </s>
 
 
-          {% if current_variant.compare_at_price > current_variant.price %}
+          <span
+            class="custom-product__discount
+            {% unless current_variant.compare_at_price > current_variant.price %}
+              is-hidden
+            {% endunless %}
+            "
+            data-discount
+          >
 
-            {% assign discount_value = current_variant.compare_at_price
-              | minus: current_variant.price
-            %}
+            {% if current_variant.compare_at_price > current_variant.price %}
 
-            {% assign discount_percent = discount_value
-              | times: 100.0
-              | divided_by: current_variant.compare_at_price
-              | round
-            %}
+              {% assign discount_value = current_variant.compare_at_price
+                | minus: current_variant.price
+              %}
 
-            <span
-              class="custom-product__discount"
-              data-discount
-            >
+              {% assign discount_percent = discount_value
+                | times: 100.0
+                | divided_by: current_variant.compare_at_price
+                | round
+              %}
+
               -{{ discount_percent }}%
-            </span>
 
-          {% else %}
+            {% endif %}
 
-            <span
-              class="custom-product__discount is-hidden"
-              data-discount
-            ></span>
-
-          {% endif %}
-
-
-          <span class="custom-product__tax">
-            Tax included.
           </span>
 
         </div>
 
 
-        <!-- STOCK BAR -->
+        <!-- STOCK -->
+
         <div class="custom-product__stock-block">
 
           <div class="custom-product__stock-line">
@@ -237,170 +205,206 @@
             class="custom-product__stock-text"
             data-stock-text
           >
+
             {% if current_variant.available %}
               In stock
             {% else %}
               Sold out
             {% endif %}
+
           </div>
 
         </div>
 
 
         <!-- DESCRIPTION -->
-        <div
-          class="custom-product__description"
-          data-product-description
-        >
+
+        <div class="custom-product__description">
           {{ selected_product.description }}
         </div>
 
 
-        <!-- =================================================
-             COLORS
-        ================================================== -->
+        <!-- =====================================================
+             COLOR
+        ====================================================== -->
 
-        {% if related_colors != blank %}
+        {% for option in selected_product.options_with_values %}
 
-          <div class="custom-product__colors">
+          {% if option.name == 'Color' or option.name == 'Colour' %}
 
-            <div class="custom-product__option-title">
-              <strong>Color:</strong>
-              <span data-color-title>
-                {{ selected_product.title }}
-              </span>
+            <div class="custom-product__colors">
+
+              <div class="custom-product__option-title">
+
+                <strong>Color:</strong>
+
+                <span data-selected-color>
+                  {{ option.selected_value }}
+                </span>
+
+              </div>
+
+
+              <div class="custom-product__color-list">
+
+                {% for value in option.values %}
+
+                  <button
+                    type="button"
+
+                    class="
+                      custom-product__color
+                      {% if value == option.selected_value %}
+                        is-active
+                      {% endif %}
+                    "
+
+                    data-option-button
+                    data-option-position="{{ option.position }}"
+                    data-option-value="{{ value | escape }}"
+                    data-color="{{ value | downcase | strip | escape }}"
+                  >
+
+                    <span class="custom-product__color-circle"></span>
+
+                    <span class="custom-product__color-name">
+                      {{ value }}
+                    </span>
+
+                  </button>
+
+                {% endfor %}
+
+              </div>
+
             </div>
 
+          {% endif %}
 
-            <div
-              class="custom-product__color-list"
-              data-color-list
-            >
+        {% endfor %}
 
-              {% for color_product in related_colors %}
+
+        <!-- =====================================================
+             SIZE
+        ====================================================== -->
+
+        {% for option in selected_product.options_with_values %}
+
+          {% if option.name == 'Size'
+            or option.name == 'Shoe size'
+          %}
+
+            <div class="custom-product__sizes">
+
+              <div class="custom-product__size-top">
+
+                <div class="custom-product__option-title">
+
+                  <strong>Size:</strong>
+
+                  <span data-selected-size>
+                    {{ option.selected_value }}
+                  </span>
+
+                </div>
 
                 <button
                   type="button"
-                  class="custom-product__color{% if color_product.id == selected_product.id %} is-active{% endif %}"
-                  data-color-product
-                  data-product-url="{{ color_product.url }}"
-                  data-product-id="{{ color_product.id }}"
-                  title="{{ color_product.title | escape }}"
-                  aria-label="{{ color_product.title | escape }}"
+                  class="custom-product__size-chart"
                 >
-
-                  {% if color_product.featured_image %}
-
-                    {{
-                      color_product.featured_image
-                      | image_url: width: 100
-                      | image_tag:
-                        loading: 'lazy',
-                        class: 'custom-product__color-image'
-                    }}
-
-                  {% endif %}
-
+                  Size Chart
                 </button>
 
-              {% endfor %}
+              </div>
+
+
+              <div class="custom-product__fit">
+
+                <div class="custom-product__fit-title">
+                  How this model fits:
+                </div>
+
+                <div class="custom-product__fit-line">
+                  <span class="custom-product__fit-track"></span>
+                  <span class="custom-product__fit-selected"></span>
+                </div>
+
+                <div class="custom-product__fit-labels">
+                  <span>Smaller</span>
+                  <span>Perfect fit</span>
+                  <span>Larger</span>
+                </div>
+
+              </div>
+
+
+              <div class="custom-product__size-list">
+
+                {% for value in option.values %}
+
+                  <button
+                    type="button"
+
+                    class="
+                      custom-product__size-button
+                      {% if value == option.selected_value %}
+                        is-active
+                      {% endif %}
+                    "
+
+                    data-option-button
+                    data-size-button
+
+                    data-option-position="{{ option.position }}"
+                    data-option-value="{{ value | escape }}"
+                  >
+                    {{ value }}
+                  </button>
+
+                {% endfor %}
+
+              </div>
 
             </div>
 
-          </div>
+          {% endif %}
 
-        {% endif %}
+        {% endfor %}
 
 
-        <!-- =================================================
-             SIZE
-        ================================================== -->
+        <!-- =====================================================
+             VARIANT JSON
+        ====================================================== -->
 
-        <div
-          class="custom-product__sizes"
-          data-size-container
+        <script
+          type="application/json"
+          data-product-variants
         >
-
-          <div class="custom-product__size-top">
-
-            <div class="custom-product__option-title">
-
-              <strong>Size:</strong>
-
-              <span data-selected-size>
-                {{ current_variant.option1 }}
-              </span>
-
-            </div>
-
-            <button
-              type="button"
-              class="custom-product__size-chart"
-            >
-              Size Chart
-            </button>
-
-          </div>
-
-
-          <!-- FIT -->
-          <div class="custom-product__fit">
-
-            <div class="custom-product__fit-title">
-              How this model fits:
-            </div>
-
-            <div class="custom-product__fit-line">
-
-              <span class="custom-product__fit-track"></span>
-              <span class="custom-product__fit-selected"></span>
-
-            </div>
-
-            <div class="custom-product__fit-labels">
-
-              <span>Smaller</span>
-              <span>Perfect fit</span>
-              <span>Larger</span>
-
-            </div>
-
-          </div>
-
-
-          <!-- SIZE BUTTONS -->
-          <div
-            class="custom-product__size-list"
-            data-size-list
-          >
-
+          [
             {% for variant in selected_product.variants %}
 
-              <button
-                type="button"
-                class="custom-product__size-button{% if variant.id == current_variant.id %} is-active{% endif %}{% unless variant.available %} is-sold-out{% endunless %}"
-                data-variant-button
-                data-variant-id="{{ variant.id }}"
-                data-variant-title="{{ variant.title | escape }}"
-                data-price="{{ variant.price }}"
-                data-compare-price="{{ variant.compare_at_price | default: 0 }}"
-                data-available="{{ variant.available }}"
-              >
+              {
+                "id": {{ variant.id | json }},
+                "option1": {{ variant.option1 | json }},
+                "option2": {{ variant.option2 | json }},
+                "option3": {{ variant.option3 | json }},
+                "price": {{ variant.price | json }},
+                "compare_at_price": {{ variant.compare_at_price | default: 0 | json }},
+                "available": {{ variant.available | json }}
+              }
 
-                {{ variant.title }}
-
-              </button>
+              {% unless forloop.last %}
+                ,
+              {% endunless %}
 
             {% endfor %}
-
-          </div>
-
-        </div>
+          ]
+        </script>
 
 
-        <!-- =================================================
+        <!-- =====================================================
              PRODUCT FORM
-        ================================================== -->
+        ====================================================== -->
 
         {% assign product_form_id = 'CustomProductForm-' | append: section.id %}
 
@@ -422,8 +426,36 @@
             type="hidden"
             name="quantity"
             value="1"
+            data-quantity-input
           >
 
+
+          <!-- QUANTITY -->
+
+          <div class="custom-product__quantity">
+
+            <button
+              type="button"
+              data-quantity-minus
+            >
+              −
+            </button>
+
+            <span data-quantity-value>
+              1
+            </span>
+
+            <button
+              type="button"
+              data-quantity-plus
+            >
+              +
+            </button>
+
+          </div>
+
+
+          <!-- ADD TO CART -->
 
           <button
             type="submit"
@@ -435,11 +467,13 @@
           >
 
             <span data-add-text>
+
               {% if current_variant.available %}
                 ADD TO CART
               {% else %}
                 SOLD OUT
               {% endif %}
+
             </span>
 
             <small data-add-stock>
@@ -462,22 +496,9 @@
 
         {% endform %}
 
-
-        <!-- PAYMENTS -->
-        <div class="custom-product__payments">
-
-          <span>PayPal</span>
-          <span>Klarna</span>
-          <span>Mastercard</span>
-          <span>VISA</span>
-          <span>WERO</span>
-
-        </div>
-
       </div>
 
     </div>
-
 
   {% else %}
 
@@ -490,12 +511,7 @@
 </section>
 
 
-
 <style>
-
-/* ============================================================
-   SECTION
-============================================================ */
 
 #CustomProduct-{{ section.id }} {
   width: 100%;
@@ -509,9 +525,7 @@
 }
 
 
-/* ============================================================
-   MAIN LAYOUT
-============================================================ */
+/* LAYOUT */
 
 #CustomProduct-{{ section.id }} .custom-product__container {
   width: 100%;
@@ -519,7 +533,10 @@
   margin: 0 auto;
 
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(340px, 0.95fr);
+
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(340px, 0.95fr);
 
   gap: 28px;
 
@@ -528,12 +545,13 @@
 
 
 /* ============================================================
-   MEDIA
+   GALLERY
 ============================================================ */
 
 #CustomProduct-{{ section.id }} .custom-product__media {
   min-width: 0;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__main-media {
   position: relative;
@@ -546,6 +564,7 @@
   overflow: hidden;
 }
 
+
 #CustomProduct-{{ section.id }} .custom-product__media-item {
   display: none;
 
@@ -556,36 +575,25 @@
   justify-content: center;
 }
 
+
 #CustomProduct-{{ section.id }} .custom-product__media-item.is-active {
   display: flex;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__image {
   display: block;
 
   width: 100%;
   height: 100%;
+
   max-height: 650px;
 
   object-fit: contain;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__video,
-#CustomProduct-{{ section.id }} .custom-product__model {
-  width: 100%;
-  max-height: 650px;
-}
 
-#CustomProduct-{{ section.id }} .custom-product__external-video {
-  width: 100%;
-
-  aspect-ratio: 16 / 9;
-}
-
-
-/* ============================================================
-   BOTTOM MEDIA
-============================================================ */
+/* THUMBNAILS */
 
 #CustomProduct-{{ section.id }} .custom-product__media-bottom {
   display: flex;
@@ -597,6 +605,7 @@
 
   margin-top: 10px;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__thumbnails {
   display: flex;
@@ -610,13 +619,13 @@
   scrollbar-width: none;
 }
 
+
 #CustomProduct-{{ section.id }} .custom-product__thumbnails::-webkit-scrollbar {
   display: none;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__thumbnail {
-  position: relative;
 
+#CustomProduct-{{ section.id }} .custom-product__thumbnail {
   flex: 0 0 55px;
 
   width: 55px;
@@ -624,18 +633,20 @@
 
   padding: 0;
 
-  border: 1px solid #d8d8d8;
+  border: 1px solid #ddd;
 
   background: #f8f8f8;
 
-  overflow: hidden;
-
   cursor: pointer;
+
+  overflow: hidden;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__thumbnail.is-active {
-  border-color: #111;
+  border: 2px solid #111;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__thumbnail-image {
   width: 100%;
@@ -646,55 +657,20 @@
   object-fit: cover;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__play {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  transform: translate(-50%, -50%);
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  width: 22px;
-  height: 22px;
-
-  border-radius: 50%;
-
-  background: rgba(255,255,255,.9);
-
-  font-size: 9px;
-}
-
-#CustomProduct-{{ section.id }} .custom-product__arrows {
-  display: flex;
-
-  flex-shrink: 0;
-
-  gap: 4px;
-}
 
 #CustomProduct-{{ section.id }} .custom-product__arrow {
-  width: 34px;
-  height: 34px;
-
   border: none;
 
   background: transparent;
 
-  color: #111;
-
-  font-size: 21px;
+  font-size: 22px;
 
   cursor: pointer;
 }
 
 
 /* ============================================================
-   RIGHT SIDE
+   PRODUCT INFO
 ============================================================ */
 
 #CustomProduct-{{ section.id }} .custom-product__info {
@@ -703,40 +679,33 @@
   top: 20px;
 
   min-width: 0;
-
-  padding-top: 2px;
 }
 
-
-/* TITLE */
 
 #CustomProduct-{{ section.id }} .custom-product__title {
   margin: 0 0 8px;
 
   font-size: 29px;
+
   line-height: 1.08;
 
   font-weight: 600;
-
-  letter-spacing: -0.03em;
 }
 
 
-/* ============================================================
-   PRICE
-============================================================ */
+/* PRICE */
 
 #CustomProduct-{{ section.id }} .custom-product__price-row {
   display: flex;
 
   align-items: center;
-
   flex-wrap: wrap;
 
-  gap: 7px;
+  gap: 8px;
 
   margin-bottom: 12px;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__price {
   color: #e11d00;
@@ -746,14 +715,14 @@
   font-weight: 600;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__compare-price {
-  color: #aaa;
 
-  font-size: 15px;
+#CustomProduct-{{ section.id }} .custom-product__compare-price {
+  color: #999;
 }
 
+
 #CustomProduct-{{ section.id }} .custom-product__discount {
-  padding: 3px 5px;
+  padding: 3px 6px;
 
   border: 1px solid #cda96b;
 
@@ -762,37 +731,30 @@
   font-size: 12px;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__tax {
-  color: #888;
-
-  font-size: 9px;
-}
 
 #CustomProduct-{{ section.id }} .is-hidden {
   display: none !important;
 }
 
 
-/* ============================================================
-   STOCK BAR
-============================================================ */
+/* STOCK */
 
 #CustomProduct-{{ section.id }} .custom-product__stock-block {
-  margin-bottom: 13px;
+  margin-bottom: 15px;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__stock-line {
-  position: relative;
 
+#CustomProduct-{{ section.id }} .custom-product__stock-line {
   width: 100%;
   height: 5px;
 
-  overflow: hidden;
-
   border-radius: 5px;
 
-  background: #f0f0f0;
+  background: #eee;
+
+  overflow: hidden;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__stock-fill {
   display: block;
@@ -800,141 +762,119 @@
   width: 16%;
   height: 100%;
 
-  border-radius: inherit;
-
   background: #f04425;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__stock-text {
   margin-top: 5px;
 
   color: #777;
 
-  font-size: 10px;
+  font-size: 11px;
 }
 
 
-/* ============================================================
-   DESCRIPTION
-============================================================ */
+/* DESCRIPTION */
 
 #CustomProduct-{{ section.id }} .custom-product__description {
-  margin: 12px 0 18px;
+  margin: 15px 0 20px;
 
   font-size: 14px;
 
-  line-height: 1.45;
-}
-
-#CustomProduct-{{ section.id }} .custom-product__description p {
-  margin-top: 0;
-  margin-bottom: 7px;
+  line-height: 1.5;
 }
 
 
-/* ============================================================
-   OPTIONS
-============================================================ */
+/* OPTIONS */
 
 #CustomProduct-{{ section.id }} .custom-product__option-title {
-  display: flex;
-
-  align-items: center;
-
-  gap: 4px;
-
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 
   font-size: 13px;
 }
 
 
-/* ============================================================
-   COLORS
-============================================================ */
+/* COLORS */
 
 #CustomProduct-{{ section.id }} .custom-product__colors {
-  margin-top: 8px;
+  margin-top: 15px;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__color-list {
   display: flex;
-
   flex-wrap: wrap;
 
-  gap: 7px;
+  gap: 8px;
 
   margin-bottom: 20px;
 }
 
+
 #CustomProduct-{{ section.id }} .custom-product__color {
-  width: 32px;
-  height: 32px;
+  display: flex;
 
-  padding: 2px;
+  align-items: center;
 
-  border: 1px solid transparent;
+  gap: 7px;
 
-  border-radius: 50%;
+  padding: 7px 10px;
 
-  background: transparent;
+  border: 1px solid #ddd;
+
+  background: white;
 
   cursor: pointer;
-
-  transition:
-    transform .15s ease,
-    border-color .15s ease;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__color:hover {
-  transform: scale(1.07);
-}
 
 #CustomProduct-{{ section.id }} .custom-product__color.is-active {
-  border-color: #111;
+  border: 2px solid #111;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__color-image {
-  display: block;
 
-  width: 100%;
-  height: 100%;
+#CustomProduct-{{ section.id }} .custom-product__color-circle {
+  width: 15px;
+  height: 15px;
 
   border-radius: 50%;
 
-  object-fit: cover;
+  border: 1px solid #ccc;
+
+  background: #eee;
 }
 
 
-/* ============================================================
-   SIZE
-============================================================ */
+#CustomProduct-{{ section.id }} .custom-product__color-name {
+  font-size: 12px;
+}
+
+
+/* SIZE */
 
 #CustomProduct-{{ section.id }} .custom-product__sizes {
-  margin-top: 12px;
+  margin-top: 15px;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__size-top {
   display: flex;
 
   justify-content: space-between;
-  align-items: center;
 
-  gap: 15px;
+  align-items: center;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__size-chart {
   padding: 0;
 
-  border: 0;
+  border: none;
 
   background: transparent;
 
   color: #999;
-
-  font: inherit;
-
-  font-size: 12px;
 
   text-decoration: underline;
 
@@ -942,11 +882,10 @@
 }
 
 
-/* FIT */
-
 #CustomProduct-{{ section.id }} .custom-product__fit {
-  margin-bottom: 15px;
+  margin: 15px 0;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__fit-title {
   margin-bottom: 7px;
@@ -956,11 +895,13 @@
   font-size: 11px;
 }
 
+
 #CustomProduct-{{ section.id }} .custom-product__fit-line {
   position: relative;
 
   height: 6px;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__fit-track {
   position: absolute;
@@ -975,11 +916,11 @@
   background: #ddd;
 }
 
+
 #CustomProduct-{{ section.id }} .custom-product__fit-selected {
   position: absolute;
 
   right: 0;
-
   top: 1px;
 
   width: 28%;
@@ -987,6 +928,7 @@
 
   background: #111;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__fit-labels {
   display: flex;
@@ -999,42 +941,31 @@
 }
 
 
-/* SIZE BUTTONS */
-
 #CustomProduct-{{ section.id }} .custom-product__size-list {
   display: grid;
 
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
 
   gap: 8px;
-
-  margin-top: 12px;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__size-button {
   min-height: 48px;
 
-  padding: 8px 5px;
-
   border: 1px solid #ddd;
 
-  background: #fff;
-
-  color: #111;
-
-  font-size: 13px;
-  font-weight: 500;
+  background: white;
 
   cursor: pointer;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__size-button:hover {
-  border-color: #111;
-}
 
 #CustomProduct-{{ section.id }} .custom-product__size-button.is-active {
   border: 2px solid #111;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__size-button.is-sold-out {
   color: #aaa;
@@ -1043,22 +974,41 @@
 }
 
 
-/* ============================================================
-   ADD TO CART
-============================================================ */
+/* QUANTITY */
 
-#CustomProduct-{{ section.id }} .custom-product__form {
-  margin-top: 13px;
+#CustomProduct-{{ section.id }} .custom-product__quantity {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-top: 18px;
 }
+
+
+#CustomProduct-{{ section.id }} .custom-product__quantity button {
+  width: 38px;
+  height: 38px;
+
+  border: 1px solid #ddd;
+
+  background: white;
+
+  cursor: pointer;
+}
+
+
+/* ADD */
 
 #CustomProduct-{{ section.id }} .custom-product__add {
   width: 100%;
 
   min-height: 58px;
 
-  padding: 8px 20px;
+  margin-top: 15px;
 
-  border: 0;
+  border: none;
 
   background: #000;
 
@@ -1071,17 +1021,9 @@
   align-items: center;
   justify-content: center;
 
-  gap: 2px;
-
-  font-size: 14px;
-  font-weight: 500;
-
   cursor: pointer;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__add:hover {
-  opacity: .88;
-}
 
 #CustomProduct-{{ section.id }} .custom-product__add:disabled {
   opacity: .45;
@@ -1089,17 +1031,10 @@
   cursor: not-allowed;
 }
 
-#CustomProduct-{{ section.id }} .custom-product__add small {
-  display: flex;
-
-  align-items: center;
-
-  gap: 4px;
-
-  font-size: 9px;
-}
 
 #CustomProduct-{{ section.id }} .custom-product__green-dot {
+  display: inline-block;
+
   width: 6px;
   height: 6px;
 
@@ -1109,95 +1044,24 @@
 }
 
 
-/* ============================================================
-   MESSAGE
-============================================================ */
-
 #CustomProduct-{{ section.id }} .custom-product__message {
-  min-height: 18px;
+  min-height: 20px;
 
-  margin-top: 7px;
-
-  font-size: 12px;
+  margin-top: 8px;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__message.is-success {
-  color: #148039;
+  color: green;
 }
+
 
 #CustomProduct-{{ section.id }} .custom-product__message.is-error {
-  color: #bd1e1e;
+  color: red;
 }
 
 
-/* ============================================================
-   PAYMENTS
-============================================================ */
-
-#CustomProduct-{{ section.id }} .custom-product__payments {
-  display: flex;
-
-  justify-content: center;
-
-  flex-wrap: wrap;
-
-  gap: 10px;
-
-  margin-top: 12px;
-
-  padding: 10px 5px;
-
-  border: 1px solid #eee;
-}
-
-#CustomProduct-{{ section.id }} .custom-product__payments span {
-  padding: 4px 8px;
-
-  border: 1px solid #e1e1e1;
-
-  background: #fafafa;
-
-  font-size: 9px;
-
-  font-weight: 600;
-}
-
-
-/* ============================================================
-   EMPTY
-============================================================ */
-
-#CustomProduct-{{ section.id }} .custom-product__empty {
-  max-width: 1200px;
-
-  margin: 0 auto;
-
-  padding: 50px;
-
-  text-align: center;
-
-  background: #f7f7f7;
-}
-
-
-/* ============================================================
-   TABLET
-============================================================ */
-
-@media screen and (max-width: 1100px) {
-
-  #CustomProduct-{{ section.id }} .custom-product__container {
-    grid-template-columns:
-      minmax(0, 1.5fr)
-      minmax(320px, 1fr);
-  }
-
-}
-
-
-/* ============================================================
-   MOBILE
-============================================================ */
+/* MOBILE */
 
 @media screen and (max-width: 800px) {
 
@@ -1205,27 +1069,26 @@
     padding: 10px 12px 35px;
   }
 
+
   #CustomProduct-{{ section.id }} .custom-product__container {
     grid-template-columns: 1fr;
-
-    gap: 22px;
   }
+
 
   #CustomProduct-{{ section.id }} .custom-product__info {
     position: static;
   }
+
 
   #CustomProduct-{{ section.id }} .custom-product__main-media,
   #CustomProduct-{{ section.id }} .custom-product__media-item {
     min-height: auto;
   }
 
-  #CustomProduct-{{ section.id }} .custom-product__title {
-    font-size: 25px;
-  }
 
   #CustomProduct-{{ section.id }} .custom-product__size-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 
 }
@@ -1233,8 +1096,8 @@
 </style>
 
 
-
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
 
   const section =
@@ -1243,6 +1106,82 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
   if (!section) return;
+
+
+  /* ============================================================
+     VARIANTS
+  ============================================================ */
+
+  const variantJson =
+    section.querySelector(
+      '[data-product-variants]'
+    );
+
+
+  const variants =
+    JSON.parse(
+      variantJson.textContent
+    );
+
+
+  const variantInput =
+    section.querySelector(
+      '[data-variant-input]'
+    );
+
+
+  const price =
+    section.querySelector(
+      '[data-product-price]'
+    );
+
+
+  const comparePrice =
+    section.querySelector(
+      '[data-compare-price]'
+    );
+
+
+  const discount =
+    section.querySelector(
+      '[data-discount]'
+    );
+
+
+  const stock =
+    section.querySelector(
+      '[data-stock-text]'
+    );
+
+
+  const addButton =
+    section.querySelector(
+      '[data-add-to-cart]'
+    );
+
+
+  const addText =
+    section.querySelector(
+      '[data-add-text]'
+    );
+
+
+  const addStock =
+    section.querySelector(
+      '[data-add-stock]'
+    );
+
+
+  const selectedColorText =
+    section.querySelector(
+      '[data-selected-color]'
+    );
+
+
+  const selectedSizeText =
+    section.querySelector(
+      '[data-selected-size]'
+    );
 
 
   const currency =
@@ -1255,372 +1194,114 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function formatMoney(cents) {
 
-    cents = Number(cents || 0);
-
-    try {
-
-      return new Intl.NumberFormat(
-        document.documentElement.lang || 'en',
-        {
-          style: 'currency',
-          currency: currency
-        }
-      ).format(cents / 100);
-
-    } catch (error) {
-
-      return (cents / 100).toFixed(2);
-
-    }
+    return new Intl.NumberFormat(
+      document.documentElement.lang || 'en',
+      {
+        style: 'currency',
+        currency: currency
+      }
+    ).format(
+      Number(cents) / 100
+    );
 
   }
 
 
+  /* ============================================================
+     CURRENT OPTIONS
+  ============================================================ */
 
-  /* ==========================================================
-     MEDIA
-  ========================================================== */
-
-  function initGallery() {
-
-    const mediaItems =
-      Array.from(
-        section.querySelectorAll(
-          '[data-media-item]'
-        )
-      );
-
-    const thumbnails =
-      Array.from(
-        section.querySelectorAll(
-          '[data-thumbnail-index]'
-        )
-      );
-
-    const previous =
-      section.querySelector(
-        '[data-prev-media]'
-      );
-
-    const next =
-      section.querySelector(
-        '[data-next-media]'
-      );
+  const selectedOptions = {};
 
 
-    let currentIndex = 0;
+  section
+    .querySelectorAll(
+      '[data-option-button].is-active'
+    )
+    .forEach(function (button) {
+
+      selectedOptions[
+        button.dataset.optionPosition
+      ] =
+        button.dataset.optionValue;
+
+    });
 
 
-    function show(index) {
+  /* ============================================================
+     FIND VARIANT
+  ============================================================ */
 
-      if (!mediaItems.length) return;
+  function findVariant() {
 
-      if (index < 0) {
-        index = mediaItems.length - 1;
-      }
+    return variants.find(
+      function (variant) {
 
-      if (index >= mediaItems.length) {
-        index = 0;
-      }
-
-      currentIndex = index;
-
-
-      mediaItems.forEach(
-        function (item, itemIndex) {
-
-          item.classList.toggle(
-            'is-active',
-            itemIndex === currentIndex
-          );
-
-          if (itemIndex !== currentIndex) {
-
-            item
-              .querySelectorAll('video')
-              .forEach(function (video) {
-
-                video.pause();
-
-              });
-
-          }
-
+        if (
+          selectedOptions[1] &&
+          variant.option1 !== selectedOptions[1]
+        ) {
+          return false;
         }
-      );
 
 
-      thumbnails.forEach(
-        function (thumbnail) {
-
-          thumbnail.classList.toggle(
-            'is-active',
-            Number(
-              thumbnail.dataset.thumbnailIndex
-            ) === currentIndex
-          );
-
+        if (
+          selectedOptions[2] &&
+          variant.option2 !== selectedOptions[2]
+        ) {
+          return false;
         }
-      );
-
-    }
 
 
-    thumbnails.forEach(
-      function (thumbnail) {
+        if (
+          selectedOptions[3] &&
+          variant.option3 !== selectedOptions[3]
+        ) {
+          return false;
+        }
 
-        thumbnail.onclick =
-          function () {
 
-            show(
-              Number(
-                this.dataset.thumbnailIndex
-              )
-            );
-
-          };
+        return true;
 
       }
     );
 
-
-    if (previous) {
-
-      previous.onclick =
-        function () {
-
-          show(
-            currentIndex - 1
-          );
-
-        };
-
-    }
-
-
-    if (next) {
-
-      next.onclick =
-        function () {
-
-          show(
-            currentIndex + 1
-          );
-
-        };
-
-    }
-
-
-    show(0);
-
   }
 
 
+  /* ============================================================
+     UPDATE VARIANT
+  ============================================================ */
 
-  /* ==========================================================
-     BUILD GALLERY FROM PRODUCT JSON
-  ========================================================== */
+  function updateVariant() {
 
-  function buildGallery(product) {
+    const variant =
+      findVariant();
 
-    const main =
-      section.querySelector(
-        '[data-main-media]'
-      );
 
-    const thumbnailContainer =
-      section.querySelector(
-        '[data-thumbnails]'
-      );
+    if (!variant) {
 
-    if (
-      !main ||
-      !thumbnailContainer
-    ) {
+      variantInput.value = '';
+
+      addButton.disabled = true;
+
+      addText.textContent =
+        'UNAVAILABLE';
+
       return;
-    }
-
-
-    main.innerHTML = '';
-    thumbnailContainer.innerHTML = '';
-
-
-    const images =
-      product.images || [];
-
-
-    images.forEach(
-      function (image, index) {
-
-        const imageUrl =
-          typeof image === 'string'
-            ? image
-            : (
-                image.src ||
-                image.url ||
-                ''
-              );
-
-
-        if (!imageUrl) return;
-
-
-        const item =
-          document.createElement('div');
-
-        item.className =
-          'custom-product__media-item';
-
-        item.dataset.mediaItem = '';
-        item.dataset.mediaIndex = index;
-
-
-        const img =
-          document.createElement('img');
-
-        img.src = imageUrl;
-
-        img.alt =
-          product.title || '';
-
-        img.loading =
-          index === 0
-            ? 'eager'
-            : 'lazy';
-
-        img.className =
-          'custom-product__image';
-
-
-        item.appendChild(img);
-
-        main.appendChild(item);
-
-
-        const thumbnail =
-          document.createElement('button');
-
-        thumbnail.type =
-          'button';
-
-        thumbnail.className =
-          'custom-product__thumbnail';
-
-        thumbnail.dataset.thumbnailIndex =
-          index;
-
-
-        const thumbnailImage =
-          document.createElement('img');
-
-        thumbnailImage.src =
-          imageUrl;
-
-        thumbnailImage.alt = '';
-
-        thumbnailImage.loading =
-          'lazy';
-
-        thumbnailImage.className =
-          'custom-product__thumbnail-image';
-
-
-        thumbnail.appendChild(
-          thumbnailImage
-        );
-
-        thumbnailContainer.appendChild(
-          thumbnail
-        );
-
-      }
-    );
-
-
-    initGallery();
-
-  }
-
-
-
-  /* ==========================================================
-     VARIANT UI
-  ========================================================== */
-
-  function updateVariant(variant) {
-
-    if (!variant) return;
-
-
-    const variantInput =
-      section.querySelector(
-        '[data-variant-input]'
-      );
-
-    const price =
-      section.querySelector(
-        '[data-product-price]'
-      );
-
-    const comparePrice =
-      section.querySelector(
-        '[data-compare-price]'
-      );
-
-    const discount =
-      section.querySelector(
-        '[data-discount]'
-      );
-
-    const stock =
-      section.querySelector(
-        '[data-stock-text]'
-      );
-
-    const addButton =
-      section.querySelector(
-        '[data-add-to-cart]'
-      );
-
-    const addText =
-      section.querySelector(
-        '[data-add-text]'
-      );
-
-    const addStock =
-      section.querySelector(
-        '[data-add-stock]'
-      );
-
-    const selectedSize =
-      section.querySelector(
-        '[data-selected-size]'
-      );
-
-
-    if (variantInput) {
-
-      variantInput.value =
-        variant.id;
 
     }
 
 
-    if (price) {
-
-      price.textContent =
-        formatMoney(
-          variant.price
-        );
-
-    }
+    variantInput.value =
+      variant.id;
 
 
-    const compare =
-      Number(
-        variant.compare_at_price || 0
+    price.textContent =
+      formatMoney(
+        variant.price
       );
+
 
     const normalPrice =
       Number(
@@ -1628,10 +1309,13 @@ document.addEventListener('DOMContentLoaded', function () {
       );
 
 
-    if (
-      comparePrice &&
-      compare > normalPrice
-    ) {
+    const compare =
+      Number(
+        variant.compare_at_price || 0
+      );
+
+
+    if (compare > normalPrice) {
 
       comparePrice.textContent =
         formatMoney(compare);
@@ -1640,41 +1324,37 @@ document.addEventListener('DOMContentLoaded', function () {
         'is-hidden'
       );
 
-    } else if (comparePrice) {
-
-      comparePrice.textContent =
-        '';
-
-      comparePrice.classList.add(
-        'is-hidden'
-      );
-
-    }
-
-
-    if (
-      discount &&
-      compare > normalPrice
-    ) {
 
       const percentage =
         Math.round(
-          ((compare - normalPrice) /
-            compare) *
-          100
+          (
+            (compare - normalPrice)
+            /
+            compare
+          )
+          * 100
         );
 
+
       discount.textContent =
-        '-' + percentage + '%';
+        '-' +
+        percentage +
+        '%';
 
       discount.classList.remove(
         'is-hidden'
       );
 
-    } else if (discount) {
+    } else {
 
-      discount.textContent =
-        '';
+      comparePrice.textContent = '';
+
+      comparePrice.classList.add(
+        'is-hidden'
+      );
+
+
+      discount.textContent = '';
 
       discount.classList.add(
         'is-hidden'
@@ -1683,430 +1363,520 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    if (selectedSize) {
-
-      selectedSize.textContent =
-        variant.title;
-
-    }
-
-
     if (variant.available) {
 
-      if (stock) {
-        stock.textContent =
-          'In stock';
-      }
+      stock.textContent =
+        'In stock';
 
-      if (addButton) {
-        addButton.disabled =
-          false;
-      }
+      addButton.disabled =
+        false;
 
-      if (addText) {
-        addText.textContent =
-          'ADD TO CART';
-      }
+      addText.textContent =
+        'ADD TO CART';
 
-      if (addStock) {
-
-        addStock.innerHTML =
-          '<span class="custom-product__green-dot"></span> IN STOCK';
-
-      }
+      addStock.innerHTML =
+        '<span class="custom-product__green-dot"></span> IN STOCK';
 
     } else {
 
-      if (stock) {
-        stock.textContent =
-          'Sold out';
-      }
+      stock.textContent =
+        'Sold out';
 
-      if (addButton) {
-        addButton.disabled =
-          true;
-      }
+      addButton.disabled =
+        true;
 
-      if (addText) {
-        addText.textContent =
-          'SOLD OUT';
-      }
+      addText.textContent =
+        'SOLD OUT';
 
-      if (addStock) {
-        addStock.innerHTML =
-          '';
-      }
+      addStock.innerHTML =
+        '';
 
     }
 
   }
 
 
+  /* ============================================================
+     GALLERY
+  ============================================================ */
 
-  function buildVariants(product) {
-
-    const list =
-      section.querySelector(
-        '[data-size-list]'
-      );
-
-    if (!list) return;
-
-
-    list.innerHTML = '';
-
-
-    const variants =
-      product.variants || [];
-
-
-    variants.forEach(
-      function (variant, index) {
-
-        const button =
-          document.createElement('button');
-
-        button.type =
-          'button';
-
-        button.className =
-          'custom-product__size-button';
-
-        button.dataset.variantButton =
-          '';
-
-        button.textContent =
-          variant.title;
-
-
-        if (!variant.available) {
-
-          button.classList.add(
-            'is-sold-out'
-          );
-
-        }
-
-
-        button.onclick =
-          function () {
-
-            list
-              .querySelectorAll(
-                '[data-variant-button]'
-              )
-              .forEach(
-                function (sizeButton) {
-
-                  sizeButton.classList.remove(
-                    'is-active'
-                  );
-
-                }
-              );
-
-            this.classList.add(
-              'is-active'
-            );
-
-            updateVariant(
-              variant
-            );
-
-          };
-
-
-        list.appendChild(
-          button
-        );
-
-
-        if (index === 0) {
-
-          button.classList.add(
-            'is-active'
-          );
-
-        }
-
-      }
+  const mediaItems =
+    Array.from(
+      section.querySelectorAll(
+        '[data-media-item]'
+      )
     );
 
 
-    const firstAvailable =
-      variants.find(
-        function (variant) {
-          return variant.available;
-        }
-      ) || variants[0];
+  const thumbnails =
+    Array.from(
+      section.querySelectorAll(
+        '[data-thumbnail]'
+      )
+    );
 
 
-    if (firstAvailable) {
-
-      const variantIndex =
-        variants.indexOf(
-          firstAvailable
-        );
-
-      const buttons =
-        list.querySelectorAll(
-          '[data-variant-button]'
-        );
-
-      buttons.forEach(
-        function (button) {
-
-          button.classList.remove(
-            'is-active'
-          );
-
-        }
-      );
+  const previous =
+    section.querySelector(
+      '[data-prev-media]'
+    );
 
 
-      if (buttons[variantIndex]) {
+  const next =
+    section.querySelector(
+      '[data-next-media]'
+    );
 
-        buttons[
-          variantIndex
-        ].classList.add(
+
+  let visibleMedia = [];
+
+  let currentMediaIndex = 0;
+
+
+  function showMedia(index) {
+
+    if (!visibleMedia.length) return;
+
+
+    if (index < 0) {
+
+      index =
+        visibleMedia.length - 1;
+
+    }
+
+
+    if (
+      index >= visibleMedia.length
+    ) {
+
+      index = 0;
+
+    }
+
+
+    currentMediaIndex =
+      index;
+
+
+    mediaItems.forEach(
+      function (item) {
+
+        item.classList.remove(
           'is-active'
         );
 
       }
+    );
 
 
-      updateVariant(
-        firstAvailable
-      );
+    thumbnails.forEach(
+      function (thumbnail) {
+
+        thumbnail.classList.remove(
+          'is-active'
+        );
+
+      }
+    );
+
+
+    const activeItem =
+      visibleMedia[index];
+
+
+    if (activeItem) {
+
+      activeItem.item
+        .classList.add(
+          'is-active'
+        );
+
+
+      if (activeItem.thumbnail) {
+
+        activeItem.thumbnail
+          .classList.add(
+            'is-active'
+          );
+
+      }
 
     }
 
   }
 
 
+  function updateGallery(color) {
 
-  /* ==========================================================
-     COLOR PRODUCT AJAX
-  ========================================================== */
+    if (!color) return;
 
-  function initColors() {
 
-    const buttons =
-      section.querySelectorAll(
-        '[data-color-product]'
+    const normalized =
+      color
+        .toLowerCase()
+        .trim();
+
+
+    visibleMedia = [];
+
+
+    mediaItems.forEach(
+      function (item) {
+
+        const itemColor =
+          (
+            item.dataset.color ||
+            ''
+          )
+          .toLowerCase()
+          .trim();
+
+
+        const matches =
+          itemColor ===
+          normalized;
+
+
+        item.style.display =
+          matches
+            ? ''
+            : 'none';
+
+
+        if (matches) {
+
+          const index =
+            mediaItems.indexOf(
+              item
+            );
+
+
+          visibleMedia.push({
+
+            item: item,
+
+            thumbnail:
+              thumbnails[index]
+
+          });
+
+        }
+
+      }
+    );
+
+
+    thumbnails.forEach(
+      function (thumbnail) {
+
+        const thumbnailColor =
+          (
+            thumbnail.dataset.color ||
+            ''
+          )
+          .toLowerCase()
+          .trim();
+
+
+        thumbnail.style.display =
+          thumbnailColor ===
+          normalized
+            ? ''
+            : 'none';
+
+      }
+    );
+
+
+    /*
+      Nëse nuk ka ALT që përputhet,
+      mos e lë gallery bosh.
+    */
+
+    if (!visibleMedia.length) {
+
+      visibleMedia =
+        mediaItems.map(
+          function (item, index) {
+
+            item.style.display = '';
+
+            if (thumbnails[index]) {
+              thumbnails[index].style.display = '';
+            }
+
+
+            return {
+
+              item: item,
+
+              thumbnail:
+                thumbnails[index]
+
+            };
+
+          }
+        );
+
+    }
+
+
+    showMedia(0);
+
+  }
+
+
+  thumbnails.forEach(
+    function (thumbnail, index) {
+
+      thumbnail.addEventListener(
+        'click',
+        function () {
+
+          const visibleIndex =
+            visibleMedia.findIndex(
+              function (media) {
+
+                return (
+                  media.thumbnail ===
+                  thumbnail
+                );
+
+              }
+            );
+
+
+          if (
+            visibleIndex !== -1
+          ) {
+
+            showMedia(
+              visibleIndex
+            );
+
+          }
+
+        }
       );
 
-
-    buttons.forEach(
-      function (button) {
-
-        button.onclick =
-          async function () {
-
-            const productUrl =
-              this.dataset.productUrl;
-
-            if (!productUrl) return;
+    }
+  );
 
 
-            buttons.forEach(
-              function (colorButton) {
+  if (previous) {
 
-                colorButton.classList.remove(
-                  'is-active'
-                );
+    previous.addEventListener(
+      'click',
+      function () {
+
+        showMedia(
+          currentMediaIndex - 1
+        );
+
+      }
+    );
+
+  }
+
+
+  if (next) {
+
+    next.addEventListener(
+      'click',
+      function () {
+
+        showMedia(
+          currentMediaIndex + 1
+        );
+
+      }
+    );
+
+  }
+
+
+  /* ============================================================
+     OPTION BUTTONS
+  ============================================================ */
+
+  const optionButtons =
+    section.querySelectorAll(
+      '[data-option-button]'
+    );
+
+
+  optionButtons.forEach(
+    function (button) {
+
+      button.addEventListener(
+        'click',
+        function () {
+
+          const position =
+            Number(
+              this.dataset.optionPosition
+            );
+
+
+          const value =
+            this.dataset.optionValue;
+
+
+          selectedOptions[
+            position
+          ] =
+            value;
+
+
+          section
+            .querySelectorAll(
+              '[data-option-position="' +
+              position +
+              '"]'
+            )
+            .forEach(
+              function (otherButton) {
+
+                otherButton
+                  .classList.remove(
+                    'is-active'
+                  );
 
               }
             );
 
-            this.classList.add(
-              'is-active'
-            );
+
+          this.classList.add(
+            'is-active'
+          );
 
 
-            try {
+          if (
+            this.hasAttribute(
+              'data-color'
+            )
+          ) {
 
-              const cleanUrl =
-                productUrl.replace(
-                  /\/$/,
-                  ''
-                );
+            if (
+              selectedColorText
+            ) {
 
-              const response =
-                await fetch(
-                  cleanUrl + '.js',
-                  {
-                    headers: {
-                      Accept:
-                        'application/json'
-                    }
-                  }
-                );
-
-
-              if (!response.ok) {
-
-                throw new Error(
-                  'Could not load product'
-                );
-
-              }
-
-
-              const product =
-                await response.json();
-
-
-              /* TITLE */
-
-              const title =
-                section.querySelector(
-                  '[data-product-title]'
-                );
-
-              if (title) {
-
-                title.textContent =
-                  product.title;
-
-              }
-
-
-              /* COLOR TEXT */
-
-              const colorTitle =
-                section.querySelector(
-                  '[data-color-title]'
-                );
-
-              if (colorTitle) {
-
-                colorTitle.textContent =
-                  product.title;
-
-              }
-
-
-              /* DESCRIPTION */
-
-              const description =
-                section.querySelector(
-                  '[data-product-description]'
-                );
-
-              if (description) {
-
-                description.innerHTML =
-                  product.description || '';
-
-              }
-
-
-              /* MEDIA */
-
-              buildGallery(
-                product
-              );
-
-
-              /* VARIANTS */
-
-              buildVariants(
-                product
-              );
-
-
-              /* DO NOT NAVIGATE */
-
-              /*
-                We intentionally do NOT use:
-                window.location.href = productUrl
-
-                so user remains on this page.
-              */
-
-
-            } catch (error) {
-
-              console.error(
-                'Color product error:',
-                error
-              );
+              selectedColorText
+                .textContent =
+                value;
 
             }
 
-          };
 
-      }
-    );
+            updateGallery(
+              value
+            );
 
-  }
+          }
 
 
+          if (
+            this.hasAttribute(
+              'data-size-button'
+            )
+          ) {
 
-  /* ==========================================================
-     INITIAL VARIANT BUTTONS
-  ========================================================== */
+            if (
+              selectedSizeText
+            ) {
 
-  function initInitialVariants() {
+              selectedSizeText
+                .textContent =
+                value;
 
-    const buttons =
+            }
+
+          }
+
+
+          updateVariant();
+
+          updateSizeAvailability();
+
+        }
+      );
+
+    }
+  );
+
+
+  /* ============================================================
+     SIZE AVAILABILITY
+  ============================================================ */
+
+  function updateSizeAvailability() {
+
+    const sizeButtons =
       section.querySelectorAll(
-        '[data-variant-button]'
+        '[data-size-button]'
       );
 
 
-    buttons.forEach(
+    sizeButtons.forEach(
       function (button) {
 
-        button.onclick =
-          function () {
-
-            buttons.forEach(
-              function (otherButton) {
-
-                otherButton.classList.remove(
-                  'is-active'
-                );
-
-              }
-            );
-
-            this.classList.add(
-              'is-active'
-            );
+        const position =
+          Number(
+            button.dataset.optionPosition
+          );
 
 
-            const variant = {
-              id:
-                Number(
-                  this.dataset.variantId
-                ),
-
-              title:
-                this.dataset.variantTitle,
-
-              price:
-                Number(
-                  this.dataset.price || 0
-                ),
-
-              compare_at_price:
-                Number(
-                  this.dataset.comparePrice || 0
-                ),
-
-              available:
-                this.dataset.available ===
-                'true'
-            };
-
-
-            updateVariant(
-              variant
-            );
-
+        const temporaryOptions =
+          {
+            ...selectedOptions,
+            [position]:
+              button.dataset.optionValue
           };
+
+
+        const variant =
+          variants.find(
+            function (variant) {
+
+              if (
+                temporaryOptions[1] &&
+                variant.option1 !==
+                temporaryOptions[1]
+              ) {
+                return false;
+              }
+
+
+              if (
+                temporaryOptions[2] &&
+                variant.option2 !==
+                temporaryOptions[2]
+              ) {
+                return false;
+              }
+
+
+              if (
+                temporaryOptions[3] &&
+                variant.option3 !==
+                temporaryOptions[3]
+              ) {
+                return false;
+              }
+
+
+              return true;
+
+            }
+          );
+
+
+        button.classList.toggle(
+          'is-sold-out',
+          !variant ||
+          !variant.available
+        );
 
       }
     );
@@ -2114,10 +1884,79 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 
+  /* ============================================================
+     QUANTITY
+  ============================================================ */
 
-  /* ==========================================================
+  const quantityInput =
+    section.querySelector(
+      '[data-quantity-input]'
+    );
+
+
+  const quantityValue =
+    section.querySelector(
+      '[data-quantity-value]'
+    );
+
+
+  const quantityPlus =
+    section.querySelector(
+      '[data-quantity-plus]'
+    );
+
+
+  const quantityMinus =
+    section.querySelector(
+      '[data-quantity-minus]'
+    );
+
+
+  let quantity = 1;
+
+
+  function updateQuantity() {
+
+    quantityInput.value =
+      quantity;
+
+    quantityValue.textContent =
+      quantity;
+
+  }
+
+
+  quantityPlus.addEventListener(
+    'click',
+    function () {
+
+      quantity++;
+
+      updateQuantity();
+
+    }
+  );
+
+
+  quantityMinus.addEventListener(
+    'click',
+    function () {
+
+      if (quantity > 1) {
+
+        quantity--;
+
+        updateQuantity();
+
+      }
+
+    }
+  );
+
+
+  /* ============================================================
      ADD TO CART AJAX
-  ========================================================== */
+  ============================================================ */
 
   const form =
     section.querySelector(
@@ -2125,200 +1964,182 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
 
-  if (form) {
-
-    form.addEventListener(
-      'submit',
-      async function (event) {
-
-        event.preventDefault();
+  const message =
+    section.querySelector(
+      '[data-product-message]'
+    );
 
 
-        const variantInput =
-          section.querySelector(
-            '[data-variant-input]'
-          );
+  form.addEventListener(
+    'submit',
+    async function (event) {
 
-        const button =
-          section.querySelector(
-            '[data-add-to-cart]'
-          );
-
-        const text =
-          section.querySelector(
-            '[data-add-text]'
-          );
-
-        const message =
-          section.querySelector(
-            '[data-product-message]'
-          );
+      event.preventDefault();
 
 
-        if (
-          !variantInput ||
-          !variantInput.value
-        ) {
-          return;
-        }
+      const variantId =
+        Number(
+          variantInput.value
+        );
 
 
-        if (button) {
+      if (!variantId) {
 
-          button.disabled =
-            true;
+        message.textContent =
+          'Please select an available variant.';
 
-        }
+        message.className =
+          'custom-product__message is-error';
 
-
-        if (text) {
-
-          text.textContent =
-            'ADDING...';
-
-        }
-
-
-        try {
-
-          const response =
-            await fetch(
-              window.Shopify.routes.root +
-              'cart/add.js',
-              {
-                method: 'POST',
-
-                headers: {
-                  'Content-Type':
-                    'application/json',
-
-                  Accept:
-                    'application/json'
-                },
-
-                body:
-                  JSON.stringify({
-                    items: [
-                      {
-                        id:
-                          Number(
-                            variantInput.value
-                          ),
-
-                        quantity: 1
-                      }
-                    ]
-                  })
-              }
-            );
-
-
-          const data =
-            await response.json();
-
-
-          if (!response.ok) {
-
-            throw new Error(
-              data.description ||
-              data.message ||
-              'Could not add product'
-            );
-
-          }
-
-
-          if (text) {
-
-            text.textContent =
-              'ADDED ✓';
-
-          }
-
-
-          if (message) {
-
-            message.textContent =
-              'Added to cart';
-
-            message.className =
-              'custom-product__message is-success';
-
-          }
-
-
-          setTimeout(
-            function () {
-
-              if (text) {
-
-                text.textContent =
-                  'ADD TO CART';
-
-              }
-
-              if (button) {
-
-                button.disabled =
-                  false;
-
-              }
-
-            },
-            1000
-          );
-
-
-        } catch (error) {
-
-          if (message) {
-
-            message.textContent =
-              error.message;
-
-            message.className =
-              'custom-product__message is-error';
-
-          }
-
-
-          if (text) {
-
-            text.textContent =
-              'ADD TO CART';
-
-          }
-
-
-          if (button) {
-
-            button.disabled =
-              false;
-
-          }
-
-        }
+        return;
 
       }
+
+
+      addButton.disabled =
+        true;
+
+
+      addText.textContent =
+        'ADDING...';
+
+
+      try {
+
+        const response =
+          await fetch(
+            window.Shopify.routes.root +
+            'cart/add.js',
+            {
+              method: 'POST',
+
+              headers: {
+                'Content-Type':
+                  'application/json',
+
+                Accept:
+                  'application/json'
+              },
+
+              body:
+                JSON.stringify({
+                  items: [
+                    {
+                      id:
+                        variantId,
+
+                      quantity:
+                        quantity
+                    }
+                  ]
+                })
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.description ||
+            data.message ||
+            'Could not add product'
+          );
+
+        }
+
+
+        addText.textContent =
+          'ADDED ✓';
+
+
+        message.textContent =
+          'Added to cart';
+
+
+        message.className =
+          'custom-product__message is-success';
+
+
+        setTimeout(
+          function () {
+
+            updateVariant();
+
+          },
+          1200
+        );
+
+
+      } catch (error) {
+
+        message.textContent =
+          error.message;
+
+
+        message.className =
+          'custom-product__message is-error';
+
+
+        updateVariant();
+
+      }
+
+    }
+  );
+
+
+  /* ============================================================
+     INITIAL STATE
+  ============================================================ */
+
+  const initialColor =
+    section.querySelector(
+      '[data-color].is-active'
     );
+
+
+  if (initialColor) {
+
+    updateGallery(
+      initialColor.dataset.optionValue
+    );
+
+  } else {
+
+    /*
+      fallback
+    */
+
+    visibleMedia =
+      mediaItems.map(
+        function (item, index) {
+
+          return {
+            item: item,
+            thumbnail:
+              thumbnails[index]
+          };
+
+        }
+      );
+
+
+    showMedia(0);
 
   }
 
 
+  updateVariant();
 
-  /* ==========================================================
-     START
-  ========================================================== */
-
-  initGallery();
-
-  initColors();
-
-  initInitialVariants();
+  updateSizeAvailability();
 
 });
-</script>
 
+</script>
 
 
 {% schema %}
