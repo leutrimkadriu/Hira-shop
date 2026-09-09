@@ -23,16 +23,18 @@
           -{{ discount }}%
         {% endif %}
       </span>
-
-      {% if product.featured_image != blank %}
-        <a href="{{ product.url }}">
-          {{
-            product.featured_image
-            | image_url: width: 600
-            | image_tag: class: 'product-main-image', alt: product.title
-          }}
-        </a>
-      {% endif %}
+      <div class="product-gallery">
+        {% for media in product.media %}
+          {% if media.media_type == 'image' %}
+            <div
+              class="gallery-item"
+              data-color="{{ media.alt | downcase | strip }}"
+            >
+              {{ media | image_url: width: 1000 | image_tag: class: 'gallery-image', loading: 'lazy', alt: media.alt }}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
 
     <h3>
@@ -56,17 +58,40 @@
       </span>
     </div>
 
-    <div class="variant-list">
-      {% for variant in product.variants %}
-        {% assign variant_discount = 0 %}
+  {% for option in product.options_with_values %}
 
-        {% if variant.compare_at_price > variant.price %}
-          {% assign variant_discount = variant.compare_at_price
-            | minus: variant.price
-            | times: 100
-            | divided_by: variant.compare_at_price
-          %}
-        {% endif %}
+  {% if option.name == 'Color' %}
+
+    <div class="color-selector">
+
+      <p>
+        Color:
+        <strong class="selected-color">
+          {{ option.selected_value }}
+        </strong>
+      </p>
+
+      <div class="color-buttons">
+
+        {% for value in option.values %}
+
+          <button
+            type="button"
+            class="color-button"
+            data-color="{{ value | downcase | strip }}"
+          >
+            {{ value }}
+          </button>
+
+        {% endfor %}
+
+      </div>
+
+    </div>
+
+  {% endif %}
+
+{% endfor %}
 
         <button
           type="button"
@@ -91,62 +116,68 @@
         >
           {{ variant.title }}
         </button>
-      {% endfor %}
-    </div>
 
-    <input
-      type="hidden"
-      name="id"
-      class="variant-id-input"
-      value="{{ current_variant.id }}"
-    >
 
-    <div class="quantity-selector">
-      <button
-        type="button"
-        class="quantity-minus"
-        aria-label="Decrease quantity"
-      >
-        -
-      </button>
+{% endfor %}
 
-      <input
-        type="number"
-        class="quantity-input"
-        value="1"
-        min="1"
-      >
 
-      <button
-        type="button"
-        class="quantity-plus"
-        aria-label="Increase quantity"
-      >
-        +
-      </button>
-    </div>
+</div>
 
-    <button
-      type="button"
-      class="add-to-cart-button"
-      {% unless current_variant.available %}
-        disabled
-      {% endunless %}
-    >
-      {% if current_variant.available %}
-        Add to Cart
-      {% else %}
-        Sold Out
-      {% endif %}
-    </button>
+<input
+  type="hidden"
+  name="id"
+  class="variant-id-input"
+  value="{{ current_variant.id }}"
+>
 
-    <p
-      class="cart-error"
-      role="status"
-      aria-live="polite"
-    ></p>
-  </div>
+<div class="quantity-selector">
+  <button
+    type="button"
+    class="quantity-minus"
+    aria-label="Decrease quantity"
+  >
+    -
+  </button>
+
+  <input
+    type="number"
+    class="quantity-input"
+    value="1"
+    min="1"
+  >
+
+  <button
+    type="button"
+    class="quantity-plus"
+    aria-label="Increase quantity"
+  >
+    +
+  </button>
+</div>
+
+<button
+  type="button"
+  class="add-to-cart-button"
+  {% unless current_variant.available %}
+    disabled
+  {% endunless %}
+>
+  {% if current_variant.available %}
+    Add to Cart
+  {% else %}
+    Sold Out
+  {% endif %}
+</button>
+
+<p
+  class="cart-error"
+  role="status"
+  aria-live="polite"
+></p>
+</div>
 {% endif %}
+
+
 
 <style>
   .product-card {
@@ -252,6 +283,7 @@
     width: 60px;
     height: 40px;
     text-align: center;
+    border:none;
   }
 
   .add-to-cart-button {
@@ -497,6 +529,35 @@
 
         addToCartButton.textContent = 'Add to Cart';
       }
+    });
+  });
+  const colorButtons = productCard.querySelectorAll('.color-button');
+
+  const galleryItems = productCard.querySelectorAll('.gallery-item');
+
+  const selectedColorText = productCard.querySelector('.selected-color');
+
+  colorButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const selectedColor = button.dataset.color;
+
+      selectedColorText.textContent = button.textContent.trim();
+
+      colorButtons.forEach((btn) => {
+        btn.classList.remove('active');
+      });
+
+      button.classList.add('active');
+
+      galleryItems.forEach((item) => {
+        const imageColor = item.dataset.color;
+
+        if (imageColor === selectedColor) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
     });
   });
 </script>
