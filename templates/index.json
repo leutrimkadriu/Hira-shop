@@ -1,26 +1,22 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "video_hero_8pFRpM": {
       "type": "video-hero",
       "name": "Video hero",
       "settings": {
-        "video": "",
         "heading": "Walk as if on clouds through autumn.",
         "text": "<p>Cloud-soft with every step, dry in every rain, and on your feet in seconds.</p>",
         "button_text": "Shop now",
-        "button_link": "",
-        "desktop_height": 85,
-        "mobile_height": 80,
-        "heading_size": 58,
-        "mobile_heading_size": 40,
-        "content_bottom": 65,
-        "mobile_content_bottom": 40,
-        "desktop_position": "center center",
-        "mobile_position": "center center",
-        "overlay_opacity": 15,
-        "text_color": "#ffffff",
-        "button_background": "#ffffff",
-        "button_text_color": "#000000"
+        "button_link": ""
       }
     },
     "bestsellers_carousel_8MVGWK": {
@@ -61,45 +57,31 @@
       "blocks": {
         "media_tFJGet": {
           "type": "media",
-          "settings": {
-            "video": ""
-          }
+          "settings": {}
         },
         "media_ETYLUP": {
           "type": "media",
-          "settings": {
-            "video": ""
-          }
+          "settings": {}
         },
         "media_C3pmdk": {
           "type": "media",
-          "settings": {
-            "video": ""
-          }
+          "settings": {}
         },
         "media_DeKCmF": {
           "type": "media",
-          "settings": {
-            "video": ""
-          }
+          "settings": {}
         },
         "media_ATCtpE": {
           "type": "media",
-          "settings": {
-            "video": ""
-          }
+          "settings": {}
         },
         "media_diQmbb": {
           "type": "media",
-          "settings": {
-            "video": ""
-          }
+          "settings": {}
         },
         "media_ergzWt": {
           "type": "media",
-          "settings": {
-            "video": ""
-          }
+          "settings": {}
         },
         "benefit_PE7zLq": {
           "type": "benefit",
@@ -321,6 +303,13 @@
         "background": "#ffffff",
         "text_color": "#111111"
       }
+    },
+    "test_e6EHb3": {
+      "type": "test",
+      "name": "Test1",
+      "settings": {
+        "product": "originas-men"
+      }
     }
   },
   "order": [
@@ -330,6 +319,7 @@
     "community_gallery_wwJHH6",
     "science_principles_kgBxxY",
     "categories_slider_qTR4HP",
-    "customer_reviews_DBBwYy"
+    "customer_reviews_DBBwYy",
+    "test_e6EHb3"
   ]
 }
