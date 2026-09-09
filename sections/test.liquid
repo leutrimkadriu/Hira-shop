@@ -1,6 +1,12 @@
 {% assign product = section.settings.product %}
 
-{{ product.title }}
+<div class="product-card">
+  {{ product.featured_image | image_url: width: 600 | image_tag }}
+
+  <h1>{{ product.title }}</h1>
+  <p>{{ product.price }}</p>
+  <button>Add to Cart</button>
+</div>
 
 {% schema %}
 {
