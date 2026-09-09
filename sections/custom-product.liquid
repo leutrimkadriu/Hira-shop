@@ -102,9 +102,12 @@
       <div class="custom-product__info">
         <!-- TITLE -->
 
-        <h1 class="custom-product__title">
-          {{ selected_product.title }}
-        </h1>
+        <div class="une">
+          <h1 class="custom-product__title">
+            {{ selected_product.title }}
+          </h1>
+          <p>Will not be restocked</p>
+        </div>
 
         <!-- PRICE -->
 
@@ -423,6 +426,11 @@
 </section>
 
 <style>
+  .une{
+    display:flex;
+    background: #ffaeae;
+    color:red;
+  }
     #CustomProduct-{{ section.id }} {
       width: 100%;
       padding: 25px 20px 60px;
