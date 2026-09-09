@@ -1,0 +1,24 @@
+{% assign product = section.settings.product %}
+
+{{ product.title }}
+
+{% schema %}
+{
+  "name": "Test1",
+  "tag": "section",
+  "class": "test-section",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Test1",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}
