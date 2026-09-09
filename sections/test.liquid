@@ -546,7 +546,6 @@
 
       /*
         FALLBACK
-
         Nëse nuk gjen foto me atë ALT,
         mos e lë gallery bosh.
       */
@@ -572,21 +571,9 @@
         return;
       }
 
-      /*
-        VARIANT ID
-      */
-
       variantInput.value = variant.id;
 
-      /*
-        PRICE
-      */
-
       productPrice.textContent = variant.priceFormatted;
-
-      /*
-        COMPARE PRICE + DISCOUNT
-      */
 
       const compare = Number(variant.compareAtPrice);
       const price = Number(variant.price);
@@ -603,10 +590,6 @@
         comparePrice.style.display = 'none';
         saleBadge.style.display = 'none';
       }
-
-      /*
-        AVAILABLE
-      */
 
       if (variant.available) {
         addToCartButton.disabled = false;
@@ -709,115 +692,8 @@
     }
 
     /*
-      UPDATE HEADER CART COUNT
-    */
-
-    function updateCartCount(cart) {
-      if (!cart) return;
-
-      const selectors = [
-        '[data-cart-count]',
-        '.cart-count',
-        '#CartCount',
-        '.cart-count-bubble span:first-child',
-        '[data-cart-count-bubble]',
-      ];
-
-      document.querySelectorAll(selectors.join(',')).forEach((element) => {
-        element.textContent = cart.item_count;
-      });
-    }
-
-    /*
-      GET CART DRAWER SECTION IDS
-    */
-
-    function getCartSections(cartDrawer) {
-      if (cartDrawer && typeof cartDrawer.getSectionsToRender === 'function') {
-        const themeSections = cartDrawer
-          .getSectionsToRender()
-          .map((item) => item.id)
-          .filter(Boolean);
-
-        if (themeSections.length) {
-          return themeSections;
-        }
-      }
-
-      if (cartDrawer) {
-        const sectionWrapper = cartDrawer.closest('.shopify-section[id^="shopify-section-"]');
-
-        if (sectionWrapper && sectionWrapper.id) {
-          return [sectionWrapper.id.replace('shopify-section-', '')];
-        }
-      }
-
-      return [];
-    }
-
-    /*
-      RENDER CART DRAWER
-    */
-
-    function renderCartDrawer(cartDrawer, data, requestedSections) {
-      if (!cartDrawer || !data || !data.sections) {
-        return false;
-      }
-
-      /*
-        Prefer the theme's own renderer.
-      */
-
-      if (typeof cartDrawer.renderContents === 'function') {
-        cartDrawer.renderContents(data);
-        return true;
-      }
-
-      /*
-        Generic fallback:
-        use the returned HTML of the real drawer section.
-      */
-
-      for (const sectionId of requestedSections) {
-        const html = data.sections[sectionId];
-
-        if (!html) continue;
-
-        const parsed = new DOMParser().parseFromString(html, 'text/html');
-
-        const freshDrawer = parsed.querySelector('cart-drawer, .cart-drawer, [data-cart-drawer]');
-
-        if (!freshDrawer) continue;
-
-        cartDrawer.innerHTML = freshDrawer.innerHTML;
-        return true;
-      }
-
-      return false;
-    }
-
-    /*
-      OPEN CART DRAWER
-    */
-
-    function openCartDrawer() {
-      const cartDrawer = document.querySelector('cart-drawer, .cart-drawer, [data-cart-drawer]');
-
-      if (!cartDrawer) return;
-
-      if (typeof cartDrawer.open === 'function') {
-        cartDrawer.open();
-        return;
-      }
-
-      cartDrawer.classList.add('active');
-      cartDrawer.classList.add('is-open');
-      cartDrawer.removeAttribute('hidden');
-      cartDrawer.setAttribute('aria-hidden', 'false');
-    }
-
-    /*
       ADD TO CART AJAX
+      Exact integration with your CartDrawer class.
     */
 
     if (addToCartButton) {
@@ -837,17 +713,15 @@
 
         cartError.textContent = '';
 
-        const oldButtonText = addToCartButton.textContent;
+        const originalButtonText = addToCartButton.textContent;
 
         addToCartButton.disabled = true;
         addToCartButton.textContent = 'Adding...';
 
         try {
-          const cartDrawer = document.querySelector('cart-drawer, .cart-drawer, [data-cart-drawer]');
+          const cartDrawer = document.querySelector('cart-drawer');
 
-          const sections = getCartSections(cartDrawer);
-
-          const payload = {
+          const body = {
             items: [
               {
                 id: variantId,
@@ -856,9 +730,16 @@
             ],
           };
 
-          if (sections.length) {
-            payload.sections = sections;
-            payload.sections_url = window.location.pathname;
+          /*
+            Your cart-drawer.js exposes:
+            cartDrawer.getSectionsToRender()
+            -> [{ id: 'cart-drawer', ... }, { id: 'cart-icon-bubble', ... }]
+          */
+
+          if (cartDrawer && typeof cartDrawer.getSectionsToRender === 'function') {
+            body.sections = cartDrawer.getSectionsToRender().map((section) => section.id);
+
+            body.sections_url = window.location.pathname;
           }
 
           const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
@@ -867,7 +748,7 @@
               'Content-Type': 'application/json',
               Accept: 'application/json',
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify(body),
           });
 
           const data = await response.json();
@@ -877,44 +758,48 @@
           }
 
           /*
-            NO SUCCESS TEXT UNDER THE BUTTON
+            Do not show "Added to cart" under button.
           */
 
           cartError.textContent = '';
 
           /*
-            REFRESH DRAWER CONTENT WITHOUT PAGE REFRESH
+            IMPORTANT:
+            Your CartDrawer.renderContents(data) updates:
+            - #CartDrawer
+            - #cart-icon-bubble
+            and then opens the drawer itself.
           */
 
-          if (cartDrawer && sections.length) {
-            renderCartDrawer(cartDrawer, data, sections);
+          if (cartDrawer && typeof cartDrawer.renderContents === 'function' && data.sections) {
+            cartDrawer.renderContents(data);
+          } else {
+            /*
+              Fallback only if cart drawer is unavailable.
+              Product is still in cart.
+            */
+            const cartResponse = await fetch(window.Shopify.routes.root + 'cart.js', {
+              headers: {
+                Accept: 'application/json',
+              },
+            });
+
+            if (!cartResponse.ok) {
+              throw new Error('Could not refresh cart');
+            }
           }
 
           /*
-            GET CURRENT CART
+            Notify theme subscribers too.
           */
 
-          const cartResponse = await fetch(window.Shopify.routes.root + 'cart.js', {
-            headers: {
-              Accept: 'application/json',
-            },
-          });
-
-          if (!cartResponse.ok) {
-            throw new Error('Could not refresh cart');
+          if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined' && PUB_SUB_EVENTS.cartUpdate) {
+            publish(PUB_SUB_EVENTS.cartUpdate, {
+              source: 'custom-product',
+              productVariantId: variantId,
+              cartData: data,
+            });
           }
-
-          const cart = await cartResponse.json();
-
-          updateCartCount(cart);
-
-          /*
-            OPEN DRAWER AFTER CONTENT IS UPDATED
-          */
-
-          requestAnimationFrame(() => {
-            openCartDrawer();
-          });
 
           addToCartButton.textContent = 'Added ✓';
 
@@ -926,7 +811,7 @@
 
           cartError.textContent = error.message || 'Could not add product';
 
-          addToCartButton.textContent = oldButtonText;
+          addToCartButton.textContent = originalButtonText;
           updateVariant();
         }
       });
