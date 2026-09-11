@@ -503,6 +503,60 @@ cartError.textContent="";
 
 
 }
+
+colorButtons.forEach((button)=>{
+button.addEventListener("click",()=>{
+selectedColor=button.dataset.value;
+if(selectedColorText){
+    selectedColorText.textContent=selectedColor;
+
+}
+colorButtons.forEach((btn)=>{
+btn.classList.remove("active")});
+button.clasList.add("active")
+updateGallery()
+updateVariant()
+})
+});
+
+sizeButtons.forEach((button)=>{
+button.addEventListener("click",()=>{
+selectedSize=button.dataset.size; 
+if(selectedSizeText){
+selectedSizeText.textContent=selectedSize}
+sizeButtons.forEach((btn)=>{
+btn.classList.remove("active")})
+button.classList.add("active")
+uptadeVariant()
+
+})
+})
+
+if(plusButton){
+plusButton.addEventListener("click",()=>{
+if(!quantity || quantity < 1){
+    quantity =1
+
+}
+quantityInput.value=quantity+1;
+
+})}
+
+if(minusButton){
+minusButton.addEventLister("click",()=>{
+let quantity=Number(quantityInput.value);
+if(quantity>1){
+quantityInput.value=quantity -1 
+}
+})}
+
+if(quantityInput){
+quantityInput.addEventListener("change",()=>{
+let quantity=Number(quantityInput.value);
+if(!quantity || quantity < 1){
+quantityInput.value=1;
+}
+})}
 </script>
 
 {% schema %}
