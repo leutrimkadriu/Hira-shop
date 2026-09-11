@@ -45,11 +45,13 @@
         {{ current_variant.price | money }}
       </span>
 
-      <span class="compare-price">
-        {%- unless current_variant.compare_at_price > current_variant.price %}
+      <span
+        class="compare-price"
+        {% unless current_variant.compare_at_price > current_variant.price %}
           style="display:none;"
-        {% endunless -%}
-        >{{ current_variant.compare_at_price | money }}
+        {% endunless %}
+      >
+        {{ current_variant.compare_at_price | money }}
       </span>
     </div>
 
