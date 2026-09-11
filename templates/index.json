@@ -325,6 +325,13 @@
         "alignment": "center",
         "background": "linear-gradient(180deg, rgba(218, 122, 122, 1) 40%, rgba(0, 0, 0, 1) 100%)"
       }
+    },
+    "test2_qFUGLK": {
+      "type": "test2",
+      "name": "Test2",
+      "settings": {
+        "product": "originals-men"
+      }
     }
   },
   "order": [
@@ -336,6 +343,7 @@
     "categories_slider_qTR4HP",
     "customer_reviews_DBBwYy",
     "test_e6EHb3",
-    "test_kDxMe9"
+    "test_kDxMe9",
+    "test2_qFUGLK"
   ]
 }
