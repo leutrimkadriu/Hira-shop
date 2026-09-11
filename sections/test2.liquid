@@ -85,7 +85,36 @@
         </div>
       {% endif %}
     {% endfor %}
-  </div>
+
+    {% for option in product.options_with_values %}
+      {% if option.name == 'Shoe size' or option.name == 'Size' %}
+        <div class="size-selector">
+          <p>
+            Size:
+            <strong class="selected-size">
+              {{ option.selected_value }}
+            </strong>
+          </p>
+          <div class="size-buttons">
+            {% for value in option.values %}
+              <button
+                type
+                button
+                class="
+                  size-button
+                  {% if value == option.selected_value %}
+                  active
+                  {% endif %}
+                "
+                data-size="{{ value | escape }}"
+              >
+                {{ value }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
 {% endif %}
 
 <style>
