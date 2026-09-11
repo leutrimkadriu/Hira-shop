@@ -5,6 +5,24 @@
     class="product-card"
     id="ProductCard-{{ section.id }}"
   >
+    <div class="product-image">
+      <span
+        class="sale-badge"
+        {% unless current_variant.compare_at_price > current_variant.price %}
+          style="display:none"
+        {% endunless %}
+      >
+        {% if current_variant.compare_at_price > current_variant.price %}
+          {% assign discount = current_variant.compare_at_price
+            | minus: current_variant.price
+            | times: 100
+            | divided_by: current_variant.compare_at_price
+          %}
+          {{ discount }}%
+        {% endif %}
+      </span>
+    </div>
+
     <div class="product-gallery">
       {% for media in product.media %}
         {% if media.media_type == 'image' %}
@@ -20,6 +38,7 @@
 
     <h1>{{ product.title }}</h1>
     <p>{{ product.price | money }}</p>
+  </div>
   </div>
 {% endif %}
 
@@ -40,3 +59,6 @@
   ]
 }
 {% endschema %}
+{% endif %}
+
+
