@@ -400,6 +400,111 @@
   }
 </style>
 
+<script>
+   document.addEventListener('DOMContentLoaded', () => {
+  const productCard = document.querySelector('#ProductCard-{{ section.id }}');
+      if (!productCard) return;
+
+
+
+    const colorButtons = productCard.querySelectorAll('.color-button');
+    const sizeButtons = productCard.querySelectorAll('.size-button');
+    const galleryItems = productCard.querySelectorAll('.gallery-item');
+    const selectedColorText = productCard.querySelector('.selected-color');
+    const selectedSizeText = productCard.querySelector('.selected-size');
+    const variantInput = productCard.querySelector('.variant-id-input');
+    const productPrice = productCard.querySelector('.product-price');
+    const comparePrice = productCard.querySelector('.compare-price');
+    const saleBadge = productCard.querySelector('.sale-badge');
+    const addToCartButton = productCard.querySelector('.add-to-cart-button');
+    const quantityInput = productCard.querySelector('.quantity-input');
+    const minusButton = productCard.querySelector('.quantity-minus');
+    const plusButton = productCard.querySelector('.quantity-plus');
+    const cartError = productCard.querySelector('.cart-error');
+    const variantJson = productCard.querySelector('.variant-json');
+
+    if(!variantJson) return;
+    const variants=JSON.parse(variantJson.textContent)
+
+
+    let selectedColor = selectedColorText ? selectedColorText.textContent.trim() : '';
+
+    let selectedSize = selectedSizeText ? selectedSizeText.textContent.trim() : '';
+
+
+    function findVariant(){
+    return variants.find((variant)=>{
+        const option1=String(variant.option1 || "")
+        const option2=String(variant.option2 || "")
+        const option3=String(variant.option3 || "")
+        const option=[ option1,option2,option3]
+
+        const hasColor = selectedColor ? options.includes(selectedColor) : true;
+
+        const hasSize = selectedSize ? options.includes(selectedSize) : true;
+
+        return hasColor && hasSize;
+
+
+    })}
+
+    function uptadeGallery(){
+    if(!selectedColor)} return;
+    const normalizedColor= selectedColor.toLowerCase().trim();
+    let foundImages=false;
+    galleryItems.forEach((item)=>{
+
+        const imageColor = (item.dataset.color || '').toLowerCase().trim();
+
+        if (imageColor === normalizedColor) {
+          item.style.display = '';
+          foundImages = true;
+        } else {
+          item.style.display = 'none';
+        }
+      })})
+
+      if (!foundImages) {
+        galleryItems.forEach((item) => {
+          item.style.display = '';
+        });
+      }
+    }
+
+    function uptadeVariant(){
+    const variant=findVariant();
+    if(!variant){
+    variantInput.value="";
+addToCartButton.disabled=true;
+addToCartButton.textContent="Unavailable";
+return;}
+variantInput.value=variant.id;
+productPrice.textContent=variant.priceFormatted;
+const compare=Number(variant.compareAtPrice)
+const price=Number(variant.price)
+if(compare > price){
+    comparePrice.textContent=variant.compareAtPriceFormatted;
+    comparePrice.style.display="";
+    const discount=Math.round(((compare-price)*100)/compare);
+    saleBadge.textContent=`${discount}%`;
+
+}
+else{
+comparePrice.style.display="none";
+saleBadge.style.display="none"}
+if(variant.available){
+addToCartButton.disabled=false;
+addToCartButton.textContent="Add to Cart"}
+else{
+addToCartButton.disabled=true
+addToCartButton.textContent="Sold Out"}
+cartError.textContent="";
+
+
+
+}
+</script>
+
 {% schema %}
 {
   "name": "Test2",
