@@ -557,6 +557,86 @@ if(!quantity || quantity < 1){
 quantityInput.value=1;
 }
 })}
+
+if(addToCartButton){
+addToCartButton.addEventListener("click",async ()=>{
+const variantId=Number(variantInput.value)
+let quantity=Number(quantityInput.value);
+if(!variantId){
+cartError.textContent="Please select an available variant"
+return;}
+if( !quantity || quantity < 1){
+quantity=1;
+quantityInput.value=1;}
+cartError.textContent="";
+const originalButtonText= addToCartButton.textContent;
+addToCartButton.disabled=true;
+addToCartButton.textContent="Adding...";
+try{
+const cartDrawer=documet.querySelector("cart-drawer");
+
+const body={
+items:[
+    {
+        id:variantId,
+        quantity:quantity
+    }
+]}
+
+if(cartDrawer && typeof cartDrawer.getSectionsToRender ==="function"){
+body.sections=cartDrawer.getSectionsToRender().map((section)=>section.id)
+body.section_url = window.location.pathname;
+
+}
+const response=await fetch(window.Shopify.routes.root + 'cart/add.json',{
+method:'POST',
+headers:{
+    'Content-Type':'application/json',
+    Accept:'application/json',
+
+},
+body:JSON.stringify(body),
+});
+const data=await response.json();
+if(!response.ok){
+throw new Error(data.description || data.message || 'Could not add product');
+}
+cartError.textContent='';
+
+if(cartDrawer && typeof cartDrawer.renderContents === 'function' && data.sections){
+cartDrawer.renderContents(data);
+}else {
+const cartResponse= await fetch (window.Shopify.routes.root + 'cart.js',{
+headers:{
+Accept:'application/json',
+
+},
+
+});
+if(!cartResponse.ok){
+throw new Error("Could not refresh cart ")}
+}
+if(typeof publish === 'function'&& typeof PUB_SUB_EVENTS !== 'undefined' && PUB_SUB_EVENTS.cartUpdate){
+publish(PUB_SUB_EVENTS.cartUpdate,{
+source:'custom-product',
+productVariantId:variantId,
+cartData:data,
+});}
+addToCartButton.textContent="'Added ✓';
+setTimeout(()=>{
+uptadeVariant()},1000)
+} catch(error){
+console.error("Add to cart error:",error);
+cartError.textContent= error.message || "Could not add product";
+addToCartButton.textContent=originalButtonText;
+updateVariant();
+}
+
+
+});
+}
+updateGallery();
+updateVariant();
 </script>
 
 {% schema %}
