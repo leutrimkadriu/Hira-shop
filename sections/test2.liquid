@@ -1,11 +1,27 @@
 {% assign product = section.settings.product %}
+{% assign current_variant = product.selected_or_first_available_variant.id %}
+{% if product != blank %}
+  <div
+    class="product-card"
+    id="ProductCard-{{ section.id }}"
+  >
+    <div class="product-gallery">
+      {% for media in product.media %}
+        {% if media.media_type == 'image' %}
+          <div
+            class="gallery-image"
+            data-color="{{ media.alt | downcase | strip }}"
+          >
+            {{ media | image_url: width: 1200 | image_tag: class: 'gallery-image', loading: 'lazy', alt: media.alt }}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
 
-{% if product.featured_image %}
-  {{ product.featured_image | image_url: width: 1200 | image_tag: product.title }}
+    <h1>{{ product.title }}</h1>
+    <p>{{ product.price | money }}</p>
+  </div>
 {% endif %}
-
-<h1>{{ product.title }}</h1>
-<p>{{ product.price | money }}</p>
 
 {% schema %}
 {
