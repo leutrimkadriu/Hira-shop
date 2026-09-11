@@ -332,6 +332,13 @@
       "settings": {
         "product": "originals-men"
       }
+    },
+    "test2_7ye3tp": {
+      "type": "test2",
+      "name": "Test2",
+      "settings": {
+        "product": "step-ins-3-0-men"
+      }
     }
   },
   "order": [
@@ -344,6 +351,7 @@
     "customer_reviews_DBBwYy",
     "test_e6EHb3",
     "test_kDxMe9",
-    "test2_qFUGLK"
+    "test2_qFUGLK",
+    "test2_7ye3tp"
   ]
 }
