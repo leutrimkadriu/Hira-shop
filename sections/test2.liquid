@@ -139,6 +139,56 @@
               {% endfor %}
       ]
     </script>
+
+    <input
+      type="hidden"
+      name="id"
+      class="variant-id-input"
+      value="{{ current_variant.id }}"
+    >
+
+    <div class="quantity-selector">
+      <button
+        type="button"
+        class="quantity-minus"
+        aria-label="Decrease quantity"
+      >
+        -
+      </button>
+      <input
+        type="number"
+        class="quantity-input"
+        value="1"
+        min="1"
+      >
+
+      <button
+        type="button"
+        class="quantity-plus"
+        aria-label="Increase quantity"
+      >
+        +
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="add-to-cart-button"
+      {% unless current_variant.available %}
+        disabled
+      {% endunless %}
+    >
+      {% if current_variant.available %}
+        Add to Cart
+      {% else %}
+        Sold out
+      {% endif %}
+    </button>
+    <p
+      class="cart-error"
+      role="status"
+      aria-live="polite"
+    ></p>
 {% endif %}
 
 <style>
