@@ -32,14 +32,7 @@
             class="gallery-item"
             data-color="{{ media.alt | downcase | strip | escape }}"
           >
-            {{
-              media
-              | image_url: width: 1200
-              | image_tag:
-                class: 'gallery-image',
-                loading: 'lazy',
-                alt: media.alt
-            }}
+            {{ media | image_url: width: 1200 | image_tag: class: 'gallery-image', loading: 'lazy', alt: media.alt }}
           </div>
         {% endif %}
       {% endfor %}
@@ -372,14 +365,11 @@
     if (!variantJson) return;
 
     const variants = JSON.parse(variantJson.textContent);
+    console.log(variants);
 
-    let selectedColor = selectedColorText
-      ? selectedColorText.textContent.trim()
-      : '';
+    let selectedColor = selectedColorText ? selectedColorText.textContent.trim() : '';
 
-    let selectedSize = selectedSizeText
-      ? selectedSizeText.textContent.trim()
-      : '';
+    let selectedSize = selectedSizeText ? selectedSizeText.textContent.trim() : '';
 
     function findVariant() {
       return variants.find((variant) => {
@@ -388,13 +378,9 @@
         const option3 = String(variant.option3 || '');
         const options = [option1, option2, option3];
 
-        const hasColor = selectedColor
-          ? options.includes(selectedColor)
-          : true;
+        const hasColor = selectedColor ? options.includes(selectedColor) : true;
 
-        const hasSize = selectedSize
-          ? options.includes(selectedSize)
-          : true;
+        const hasSize = selectedSize ? options.includes(selectedSize) : true;
 
         return hasColor && hasSize;
       });
@@ -407,9 +393,7 @@
       let foundImages = false;
 
       galleryItems.forEach((item) => {
-        const imageColor = (item.dataset.color || '')
-          .toLowerCase()
-          .trim();
+        const imageColor = (item.dataset.color || '').toLowerCase().trim();
 
         if (imageColor === normalizedColor) {
           item.style.display = '';
@@ -562,65 +546,45 @@
             items: [
               {
                 id: variantId,
-                quantity: quantity
-              }
-            ]
+                quantity: quantity,
+              },
+            ],
           };
 
-          if (
-            cartDrawer &&
-            typeof cartDrawer.getSectionsToRender === 'function'
-          ) {
-            body.sections = cartDrawer
-              .getSectionsToRender()
-              .map((section) => section.id);
+          if (cartDrawer && typeof cartDrawer.getSectionsToRender === 'function') {
+            body.sections = cartDrawer.getSectionsToRender().map((section) => section.id);
 
             body.sections_url = window.location.pathname;
           }
 
-          const root =
-            window.Shopify && window.Shopify.routes
-              ? window.Shopify.routes.root
-              : '/';
+          const root = window.Shopify && window.Shopify.routes ? window.Shopify.routes.root : '/';
 
           const response = await fetch(root + 'cart/add.js', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Accept: 'application/json'
+              Accept: 'application/json',
             },
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
           });
 
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(
-              data.description ||
-              data.message ||
-              'Could not add product'
-            );
+            throw new Error(data.description || data.message || 'Could not add product');
           }
 
           cartError.textContent = '';
 
-          if (
-            cartDrawer &&
-            typeof cartDrawer.renderContents === 'function' &&
-            data.sections
-          ) {
+          if (cartDrawer && typeof cartDrawer.renderContents === 'function' && data.sections) {
             cartDrawer.renderContents(data);
           }
 
-          if (
-            typeof publish === 'function' &&
-            typeof PUB_SUB_EVENTS !== 'undefined' &&
-            PUB_SUB_EVENTS.cartUpdate
-          ) {
+          if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined' && PUB_SUB_EVENTS.cartUpdate) {
             publish(PUB_SUB_EVENTS.cartUpdate, {
               source: 'custom-product',
               productVariantId: variantId,
-              cartData: data
+              cartData: data,
             });
           }
 
@@ -631,8 +595,7 @@
           }, 1000);
         } catch (error) {
           console.error('Add to cart error:', error);
-          cartError.textContent =
-            error.message || 'Could not add product';
+          cartError.textContent = error.message || 'Could not add product';
 
           addToCartButton.textContent = originalButtonText;
           updateVariant();
