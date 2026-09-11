@@ -52,6 +52,37 @@
         >{{ current_variant.compare_at_price | money }}
       </span>
     </div>
+
+    {% for option in product.options_with_values %}
+      {% if option.name == 'Color' %}
+        <div class="color-selector">
+          <p>
+            Color:
+            <strong class="selected-color">
+              {{ option.selected_value }}
+            </strong>
+          </p>
+
+          <div class="color-buttons">
+            {% for value in option.values %}
+              <button
+                type="button"
+                class="
+                  color-button
+                  {% if value == option.selected_value %}
+                    active
+                  {% endif %}
+                "
+                data-color="{{ value | downcase | strip }}"
+                data-value="{{ value | escape }}"
+              >
+                {{ value }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
   </div>
 {% endif %}
 
