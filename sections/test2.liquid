@@ -34,6 +34,13 @@
           >
             {{ media | image_url: width: 1200 | image_tag: class: 'gallery-image', loading: 'lazy', alt: media.alt }}
           </div>
+        {% elsif media.media_type == 'video' %}
+          <div
+            class="gallery-item"
+            data-color="{{ media.alt | downcase | strip | escape }}"
+          >
+            {{ media | video_tag: controls: true }}
+          </div>
         {% endif %}
       {% endfor %}
     </div>
