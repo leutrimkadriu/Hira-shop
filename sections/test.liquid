@@ -55,10 +55,15 @@
         {{ product.title }}
       </a>
     </h3>
+ {% if product.metafields.custom.material_and_care != blank %}
+  <div class="product-material">
+    <h3>Material and Care</h3>
+
     <p>
-  Material:
-  {{ product.metafields.custom.value }}
-</p> 
+      {{ product.metafields.custom.material_and_care.value }}
+    </p>
+  </div>
+{% endif %}
 
     <!--
       =========================
