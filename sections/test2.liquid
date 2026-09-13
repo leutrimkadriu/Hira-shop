@@ -50,17 +50,45 @@
         {{ product.title }}
       </a>
     </h3>
-    <div class="product-accordion">
-      <details>
-        <summary>
-          <span>Material and Care</span>
-          <span class="accordion-icon">+</span>
-        </summary>
+    <div class="product-accordions">
+      {% if product.metafields.custom.shipping_returns != blank %}
+        <details class="product-accordion">
+          <summary>
+            <span>Shipping & Returns</span>
+            <span class="accordion-icon">+</span>
+          </summary>
 
-        <div class="accordion-content">
-          <p>{{ product.metafields.custom.material_and_care }}</p>
-        </div>
-      </details>
+          <div class="accordion-content">
+            {{ product.metafields.custom.shipping_returns.value | newline_to_br }}
+          </div>
+        </details>
+      {% endif %}
+
+      {% if product.metafields.custom.description != blank %}
+        <details class="product-accordion">
+          <summary>
+            <span>Description</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            {{ product.metafields.custom.description.value | newline_to_br }}
+          </div>
+        </details>
+      {% endif %}
+
+      {% if product.metafields.custom.material_and_care != blank %}
+        <details class="product-accordion">
+          <summary>
+            <span>Material and Care</span>
+            <span class="accordion-icon">+</span>
+          </summary>
+
+          <div class="accordion-content">
+            {{ product.metafields.custom.material_and_care.value | newline_to_br }}
+          </div>
+        </details>
+      {% endif %}
     </div>
 
     <div class="product-prices">
@@ -202,111 +230,110 @@
 {% endif %}
 
 <style>
-  .product-card {
-    width: 100%;
-    max-width: 500px;
-    padding: 20px;
-    background: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-  }
+    .product-card {
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
 
-  .product-image {
-    position: relative;
-  }
+    .product-image {
+      position: relative;
+    }
 
-  .product-gallery {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
+    .product-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
 
-  .gallery-item {
-    width: 100%;
-  }
+    .gallery-item {
+      width: 100%;
+    }
 
-  .gallery-image {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
+    .gallery-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
 
-  .sale-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: black;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 5px;
-    z-index: 5;
-  }
+    .sale-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: black;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 5px;
+      z-index: 5;
+    }
 
-  .product-card h3 {
-    color: {{ section.settings.heading_color }};
-    font-size: 18px;
-    font-weight: 500;
-    margin-top: 15px;
-    text-align: {{ section.settings.alignment }};
-  }
+    .product-card h3 {
+      color: {{ section.settings.heading_color }};
+      font-size: 18px;
+      font-weight: 500;
+      margin-top: 15px;
+      text-align: {{ section.settings.alignment }};
+    }
 
-  .product-card h3 a {
-    color: inherit;
-    text-decoration: none;
-  }
+    .product-card h3 a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-  .product-prices {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-  }
+    .product-prices {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-  .product-price {
-    font-size: 18px;
-    font-weight: 600;
-  }
+    .product-price {
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-  .compare-price {
-    text-decoration: line-through;
-    opacity: 0.6;
-  }
+    .compare-price {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
 
-  .color-selector,
-  .size-selector {
-    margin-top: 20px;
-  }
+    .color-selector,
+    .size-selector {
+      margin-top: 20px;
+    }
 
-  .color-buttons,
-  .size-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+    .color-buttons,
+    .size-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
-  .color-button,
-  .size-button {
-    padding: 9px 14px;
-    background: white;
-    color: black;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+    .color-button,
+    .size-button {
+      padding: 9px 14px;
+      background: white;
+      color: black;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-  .color-button.active,
-  .size-button.active {
-    background: {{ section.settings.background }};
-    color: white;
-    border-color: transparent;
-  }
+    .color-button.active,
+    .size-button.active {
+      background: {{ section.settings.background }};
+      color: white;
+      border-color: transparent;
+    }
 
-  .color-button:hover,
-  .size-button:hover {
-    border-color: #000;
-  }
+    .color-button:hover,
+    .size-button:hover {
+      border-color: #000;
+    }
   .product-accordion {
-    width: 100%;
     border-bottom: 1px solid #e5e5e5;
   }
 
@@ -315,12 +342,13 @@
     justify-content: space-between;
     align-items: center;
 
-    padding: 18px 0;
+    padding: 20px 0;
+
     cursor: pointer;
     list-style: none;
 
     font-size: 16px;
-    color: #000;
+    color: #111;
   }
 
   .product-accordion summary::-webkit-details-marker {
@@ -328,73 +356,75 @@
   }
 
   .accordion-icon {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 300;
     line-height: 1;
+    transition: transform 0.2s ease;
   }
 
-  .accordion-content {
-    padding: 0 0 20px;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  details[open] .accordion-icon {
+  .product-accordion[open] .accordion-icon {
     transform: rotate(45deg);
   }
 
-  .quantity-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 20px;
-  }
+  .accordion-content {
+    padding: 0 30px 20px 0;
 
-  .quantity-selector button {
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    border: 1px solid #ddd;
-    background: white;
-  }
-
-  .quantity-input {
-    width: 60px;
-    height: 40px;
-    text-align: center;
-    border: 1px solid #ddd;
-  }
-
-  .add-to-cart-button {
-    width: 100%;
-    background: black;
-    color: white;
-    border: none;
-    padding: 14px;
-    margin-top: 15px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-
-  .add-to-cart-button:hover {
-    background: #333;
-  }
-
-  .add-to-cart-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  .cart-error {
-    margin-top: 10px;
     font-size: 14px;
+    line-height: 1.6;
+    color: #555;
   }
-
-  @media screen and (max-width: 749px) {
-    .product-gallery {
-      grid-template-columns: 1fr;
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
     }
-  }
+
+    .quantity-selector button {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: white;
+    }
+
+    .quantity-input {
+      width: 60px;
+      height: 40px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .add-to-cart-button {
+      width: 100%;
+      background: black;
+      color: white;
+      border: none;
+      padding: 14px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .add-to-cart-button:hover {
+      background: #333;
+    }
+
+    .add-to-cart-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .cart-error {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    @media screen and (max-width: 749px) {
+      .product-gallery {
+        grid-template-columns: 1fr;
+      }
+    }
 </style>
 
 <script>
