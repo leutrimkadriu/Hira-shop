@@ -51,15 +51,15 @@
       </a>
     </h3>
     <div class="product-accordions">
-      {% if product.metafields.custom.shipping_returns != blank %}
+      {% if product.metafields.custom.material_and_care != blank %}
         <details class="product-accordion">
           <summary>
-            <span>Shipping & Returns</span>
+            <span>Material and Care</span>
             <span class="accordion-icon">+</span>
           </summary>
 
           <div class="accordion-content">
-            {{ product.metafields.custom.shipping_returns.value | newline_to_br }}
+            {{ product.metafields.custom.material_and_care.value | newline_to_br }}
           </div>
         </details>
       {% endif %}
@@ -77,15 +77,15 @@
         </details>
       {% endif %}
 
-      {% if product.metafields.custom.material_and_care != blank %}
+      {% if product.metafields.custom.shipping_returns != blank %}
         <details class="product-accordion">
           <summary>
-            <span>Material and Care</span>
+            <span>Shipping & Returns</span>
             <span class="accordion-icon">+</span>
           </summary>
 
           <div class="accordion-content">
-            {{ product.metafields.custom.material_and_care.value | newline_to_br }}
+            {{ product.metafields.custom.shipping_returns.value | newline_to_br }}
           </div>
         </details>
       {% endif %}
