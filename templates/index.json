@@ -58,31 +58,45 @@
       "blocks": {
         "media_tFJGet": {
           "type": "media",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/5_473d67a7-b7ee-437e-81cb-c7d774a14776.webp"
+          }
         },
         "media_ETYLUP": {
           "type": "media",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/5_5bf9e66d-c19f-4e63-82f8-dda68a65e60c.jpg"
+          }
         },
         "media_C3pmdk": {
           "type": "media",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/6_0f7cfa98-2ab4-4609-b48f-3063ea686562.webp"
+          }
         },
         "media_DeKCmF": {
           "type": "media",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/5_6f0785f6-46ca-484f-a66c-b97a11a938b4.webp"
+          }
         },
         "media_ATCtpE": {
           "type": "media",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/6_3d328b1f-8603-482b-9397-29c78e5835ea.webp"
+          }
         },
         "media_diQmbb": {
           "type": "media",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/5_553ced2e-2e20-4ad0-aea5-60953fc25036.jpg"
+          }
         },
         "media_ergzWt": {
           "type": "media",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/4_3db21a8c-7fd0-4955-9b0e-b32f27ffccd0.webp"
+          }
         },
         "benefit_PE7zLq": {
           "type": "benefit",
