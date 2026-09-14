@@ -13,6 +13,7 @@
       "type": "video-hero",
       "name": "Video hero",
       "settings": {
+        "video": "shopify://files/videos/ee7a2865e0af4ea8b48780c7d6d2a49f.HD-1080p-4.8Mbps-93510490_76cd16d4-b382-4fff-baab-56899b14cade.mp4",
         "heading": "Walk as if on clouds through autumn.",
         "text": "<p>Cloud-soft with every step, dry in every rain, and on your feet in seconds.</p>",
         "button_text": "Shop now",
@@ -330,14 +331,20 @@
       "type": "test2",
       "name": "Test2",
       "settings": {
-        "product": "originals-men"
+        "product": "originals-men",
+        "heading_color": "#000000",
+        "background": "#000000",
+        "alignment": "left"
       }
     },
     "test2_7ye3tp": {
       "type": "test2",
       "name": "Test2",
       "settings": {
-        "product": "step-ins-3-0-men"
+        "product": "step-ins-3-0-men",
+        "heading_color": "#000000",
+        "background": "#000000",
+        "alignment": "left"
       }
     }
   },
