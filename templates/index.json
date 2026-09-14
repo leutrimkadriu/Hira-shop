@@ -56,6 +56,16 @@
     "community_gallery_wwJHH6": {
       "type": "community-gallery",
       "blocks": {
+        "media_yTE3ab": {
+          "type": "media",
+          "settings": {}
+        },
+        "media_8zDYKW": {
+          "type": "media",
+          "settings": {
+            "video": "shopify://files/videos/2_09e8067b-4c35-4dfb-922f-0f6824ec2c09.mp4"
+          }
+        },
         "media_tFJGet": {
           "type": "media",
           "settings": {
@@ -124,6 +134,8 @@
         }
       },
       "block_order": [
+        "media_yTE3ab",
+        "media_8zDYKW",
         "media_tFJGet",
         "media_ETYLUP",
         "media_C3pmdk",
