@@ -1,5 +1,6 @@
 {% assign product = settings.product %}
 {% assign product_image = product.featured_image %}
+<<<<<<< HEAD
 {{ product_image | image_url: width: 1000 | image_tag }}
 {{ product.title }}
 {{ product.description }}
@@ -7,6 +8,18 @@
 {{ product.compare_at_price | money }}
 {{ product.compare_at_price_min |  money}}
 {{ product.compare_at_price_max | money}}
+=======
+<div class="product-image">
+    <h1>{{ product.title }}</h1>
+    <img src="{{ product_image | image_url: width: 1000 }}" alt="{{ product.title }}" width="1000" height="1000">
+    <p>Product image: {{ product.featured_image }}</p>
+    <p>{{ product.description }}</p>
+    <p>{{ product.price |  money }}</p>
+    <p>{{ product.compare_at_price | money }}</p>
+    <p>{{ product.compare_at_price_min |  money}}</p>
+    <p>{{ product.compare_at_price_max | money}}</p>
+</div>
+>>>>>>> ca9840a (..)
 {% schema  %} 
 {
     "name": "Test 3",
