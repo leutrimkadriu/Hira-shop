@@ -1,2 +1,26 @@
-{% schema %}
+{{ product.title }}
+{{ product.description }}
+{{ product.price }}
+{{ product.compare_at_price }}
+{{ product.compare_at_price_min }}
+{{ product.compare_at_price_max }}
+{{ product.compare_at_price_varies }}
+
+
+{% schema  %} 
+{
+    "name": "Test 3",
+    "settings": [
+        {
+            "type": "text",
+            "id": "test",
+            "label": "Test"
+        },
+        {
+            "type": "product",
+            "id": "product",
+            "label": "Product"
+        }
+    ]
+}
 {% endschema %}
