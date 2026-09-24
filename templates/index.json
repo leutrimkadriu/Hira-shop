@@ -372,6 +372,14 @@
         "background": "#000000",
         "alignment": "left"
       }
+    },
+    "test3_393UBX": {
+      "type": "test3",
+      "name": "Test 3",
+      "settings": {
+        "test": "Test1",
+        "product": "sleek-men"
+      }
     }
   },
   "order": [
@@ -385,6 +393,7 @@
     "test_e6EHb3",
     "test_kDxMe9",
     "test2_qFUGLK",
-    "test2_7ye3tp"
+    "test2_7ye3tp",
+    "test3_393UBX"
   ]
 }
