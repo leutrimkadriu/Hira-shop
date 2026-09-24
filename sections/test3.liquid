@@ -1,4 +1,4 @@
-{% assign product = settings.product %}
+{% assign product = section.settings.product %}
 {% assign product_image = product.featured_image %}
 {{ product_image | image_url: width: 1000 | image_tag }}
 {{ product.title }}
