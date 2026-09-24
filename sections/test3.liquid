@@ -1,3 +1,6 @@
+{% assign product = settings.product %}
+{% assign product_image = product.featured_image %}
+{{ product_image | image_url: width: 1000 | image_tag }}
 {{ product.title }}
 {{ product.description }}
 {{ product.price }}
@@ -5,8 +8,7 @@
 {{ product.compare_at_price_min }}
 {{ product.compare_at_price_max }}
 {{ product.compare_at_price_varies }}
-
-
+{{ product.compare_at_price_varies_text }}
 {% schema  %} 
 {
     "name": "Test 3",
