@@ -1,21 +1,12 @@
 {% assign product = section.settings.product %}
 {% assign product_image = product.featured_image %}
-<<<<<<< HEAD
-{{ product_image | image_url: width: 1000 | image_tag }}
-{{ product.title }}
-{{ product.description }}
-{{ product.price |  money }}
-{{ product.compare_at_price | money }}
-{{ product.compare_at_price_min |  money}}
-{{ product.compare_at_price_max | money}}
-=======
 <div class="product-image">
     <h1>{{ product.title }}</h1>
-    <img src="{{ product_image | image_url: width: 1000 }}" alt="{{ product.title }}" width="1000" height="1000">
-    <p>Product image: {{ product.featured_image }}</p>
+    <img src="{{ product_image | image_url: width: 400 }}" alt="{{ product.title }}" width="400" height="400">
+   
     <p>{{ product.description }}</p>
-    <p>{{ product.price |  money }}</p>
-    <p>{{ product.compare_at_price | money }}</p>
+    <p>Price:{{ product.price |  money }}</p>
+    <p>{Compare at price :{ product.compare_at_price | money }}</p>
     <p>{{ product.compare_at_price_min |  money}}</p>
     <p>{{ product.compare_at_price_max | money}}</p>
 </div>
