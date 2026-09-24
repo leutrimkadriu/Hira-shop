@@ -355,6 +355,7 @@
     },
     "test2_qFUGLK": {
       "type": "test2",
+      "disabled": true,
       "name": "Test2",
       "settings": {
         "product": "originals-men",
@@ -365,6 +366,7 @@
     },
     "test2_7ye3tp": {
       "type": "test2",
+      "disabled": true,
       "name": "Test2",
       "settings": {
         "product": "step-ins-3-0-men",
