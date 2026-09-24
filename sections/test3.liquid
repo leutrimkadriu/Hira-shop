@@ -6,7 +6,7 @@
    
     <p>{{ product.description }}</p>
     <p>Price:{{ product.price |  money }}</p>
-    <p>{Compare at price :{ product.compare_at_price | money }}</p>
+    <p>Compare at price :{{ product.compare_at_price | money }}</p>
     <p>{{ product.compare_at_price_min |  money}}</p>
     <p>{{ product.compare_at_price_max | money}}</p>
 </div>
