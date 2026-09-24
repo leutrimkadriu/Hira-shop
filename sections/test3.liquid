@@ -1,12 +1,12 @@
-{% assign product = section.settings.product %}
+{% assign product = settings.product %}
 {% assign product_image = product.featured_image %}
 {{ product_image | image_url: width: 1000 | image_tag }}
-<h1>{{ product.title }}</h1>
-<p>{{ product.description }}</p>
-<p>{{ product.price |  money }}</p>
-<p>{{ product.compare_at_price | money }}</p>
-<p>{{ product.compare_at_price_min |  money}}</p>
-<p>{{ product.compare_at_price_max | money}}</p>
+{{ product.title }}
+{{ product.description }}
+{{ product.price |  money }}
+{{ product.compare_at_price | money }}
+{{ product.compare_at_price_min |  money}}
+{{ product.compare_at_price_max | money}}
 {% schema  %} 
 {
     "name": "Test 3",
