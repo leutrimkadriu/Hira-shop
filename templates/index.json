@@ -375,12 +375,12 @@
         "alignment": "left"
       }
     },
-    "test3_393UBX": {
+    "test3_WaRhAK": {
       "type": "test3",
       "name": "Test 3",
       "settings": {
-        "test": "Test1",
-        "product": "sleek-men"
+        "test": "test3",
+        "product": "originas-men"
       }
     }
   },
@@ -396,6 +396,6 @@
     "test_kDxMe9",
     "test2_qFUGLK",
     "test2_7ye3tp",
-    "test3_393UBX"
+    "test3_WaRhAK"
   ]
 }
