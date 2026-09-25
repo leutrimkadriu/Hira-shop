@@ -382,6 +382,33 @@
         "test": "test3",
         "product": "originals-men"
       }
+    },
+    "test_block_d6Jfce": {
+      "type": "test-block",
+      "blocks": {
+        "heading_8BPTWF": {
+          "type": "heading",
+          "name": "Heading",
+          "settings": {
+            "heading": "Trimi"
+          },
+          "blocks": {}
+        },
+        "button_TpViYc": {
+          "type": "button",
+          "name": "color",
+          "settings": {
+            "heading_color": "#F3E6E6"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading_8BPTWF",
+        "button_TpViYc"
+      ],
+      "name": "test-block",
+      "settings": {}
     }
   },
   "order": [
@@ -396,6 +423,7 @@
     "test_kDxMe9",
     "test2_qFUGLK",
     "test2_7ye3tp",
-    "test3_WaRhAK"
+    "test3_WaRhAK",
+    "test_block_d6Jfce"
   ]
 }
