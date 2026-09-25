@@ -1,15 +1,21 @@
-<button style="background:{{ section.settings.color }}">Kliko Ketu</button>
+<button style="background: {{ section.settings.heading_color }}">
+  Kliko Ketu
+</button>
 
 {% schema %}
 {
-    "name": "color",
-    "settings": [{
-  "type": "color",
-  "id": "color",
-  "label": "Heading color",
-  "placeholder": "Default"
-}],
-"presets": [{
-"name": "color"}]
+  "name": "Color",
+  "settings": [
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Color"
+    }
+  ]
 }
 {% endschema %}
