@@ -398,7 +398,7 @@
           "type": "button",
           "name": "color",
           "settings": {
-            "heading_color": "#F3E6E6"
+            "heading_color": "#E35959"
           },
           "blocks": {}
         }
